@@ -3,7 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Navbar } from './components/navbar'
 import { Hero } from './components/Hero'
 import { Dashboard } from './components/Dashboard'
+import { SavedRepos } from './components/SavedRepos'
+import { Analytics } from './components/Analytics'
 import { AuthCallback } from './components/AuthCallback'
+import { QuickActions } from './components/QuickActions'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 
@@ -38,6 +41,54 @@ function App() {
             <Route path="/dashboard" element={
               <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
                 <Dashboard />
+              </div>
+            } />
+            
+            {/* Saved Repos */}
+            <Route path="/saved" element={
+              <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+                {/* Animated background grid */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `
+                      linear-gradient(to right, currentColor 1px, transparent 1px),
+                      linear-gradient(to bottom, currentColor 1px, transparent 1px)
+                    `,
+                    backgroundSize: '50px 50px',
+                    color: 'currentColor'
+                  }} />
+                </div>
+                
+                <div className="relative z-10">
+                  <Navbar noBorder={true} />
+                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
+                    <SavedRepos />
+                  </main>
+                </div>
+              </div>
+            } />
+            
+            {/* Analytics */}
+            <Route path="/analytics" element={
+              <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+                {/* Animated background grid */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `
+                      linear-gradient(to right, currentColor 1px, transparent 1px),
+                      linear-gradient(to bottom, currentColor 1px, transparent 1px)
+                    `,
+                    backgroundSize: '50px 50px',
+                    color: 'currentColor'
+                  }} />
+                </div>
+                
+                <div className="relative z-10">
+                  <Navbar noBorder={true} />
+                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
+                    <Analytics />
+                  </main>
+                </div>
               </div>
             } />
             

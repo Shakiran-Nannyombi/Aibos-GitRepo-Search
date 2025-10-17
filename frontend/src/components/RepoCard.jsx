@@ -1,4 +1,5 @@
-import { Star, GitFork, ExternalLink } from 'lucide-react';
+import { Star, GitFork, ExternalLink, Plus, Check } from 'lucide-react';
+import { useState } from 'react';
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -21,6 +22,31 @@ const languageColors = {
 };
 
 export function RepoCard({ repo }) {
+    const [isSaved, setIsSaved] = useState(() => {
+        const savedRepos = JSON.parse(localStorage.getItem('saved_repos') || '[]');
+        return savedRepos.some(r => r.id === repo.id);
+    });
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        const savedRepos = JSON.parse(localStorage.getItem('saved_repos') || '[]');
+        
+        if (isSaved) {
+            // Remove from saved
+            const filtered = savedRepos.filter(r => r.id !== repo.id);
+            localStorage.setItem('saved_repos', JSON.stringify(filtered));
+            setIsSaved(false);
+        } else {
+            // Add to saved
+            savedRepos.push(repo);
+            localStorage.setItem('saved_repos', JSON.stringify(savedRepos));
+            setIsSaved(true);
+        }
+        
+        // Trigger custom event for SavedRepos component
+        window.dispatchEvent(new Event('repoSaved'));
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -35,8 +61,32 @@ export function RepoCard({ repo }) {
     };
 
     return (
-        <div className="card p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between gap-4">
+        <div className="group relative p-6 rounded-2xl 
+                      border-2 border-blue-200/30 dark:border-purple-800/30 
+                      bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md
+                      hover:border-blue-400 dark:hover:border-purple-400
+                      hover:bg-blue-50/50 dark:hover:bg-purple-950/30
+                      hover:shadow-2xl hover:scale-[1.01]
+                      transition-all duration-300">
+            {/* Save Button */}
+            <button
+                onClick={handleSave}
+                className={`absolute top-4 right-4 p-2 rounded-full 
+                          border-2 transition-all duration-300 z-10
+                          ${isSaved 
+                            ? 'bg-green-500 border-green-500 text-white hover:bg-green-600' 
+                            : 'bg-white dark:bg-black border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-purple-400'
+                          }`}
+                title={isSaved ? 'Remove from saved' : 'Save repository'}
+            >
+                {isSaved ? (
+                    <Check className="w-5 h-5" strokeWidth={3} />
+                ) : (
+                    <Plus className="w-5 h-5" strokeWidth={3} />
+                )}
+            </button>
+
+            <div className="flex items-start justify-between gap-4 pr-12">
                 <div className="flex-1 min-w-0">
                     {/* Repo Name */}
                     <div className="flex items-center gap-2 mb-2">
@@ -44,16 +94,20 @@ export function RepoCard({ repo }) {
                             href={repo.html_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xl font-semibold text-light-accent dark:text-dark-accent hover:underline truncate"
+                            className="text-xl font-bold text-gray-900 dark:text-gray-100 
+                                     hover:text-black dark:hover:text-white
+                                     group-hover:underline truncate transition-colors"
                         >
                             {repo.full_name}
                         </a>
-                        <ExternalLink className="w-4 h-4 flex-shrink-0 text-light-muted dark:text-dark-muted" />
+                        <ExternalLink className="w-4 h-4 flex-shrink-0 text-gray-500 dark:text-gray-400 
+                                               group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" />
                     </div>
 
                     {/* Description */}
                     {repo.description && (
-                        <p className="text-light-muted dark:text-dark-muted mb-4 line-clamp-2">
+                        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 
+                                    group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
                             {repo.description}
                         </p>
                     )}
@@ -61,26 +115,28 @@ export function RepoCard({ repo }) {
                     {/* Stats and Language */}
                     <div className="flex items-center gap-6 flex-wrap text-sm">
                         {repo.language && (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-300">
                                 <span
-                                    className="w-3 h-3 rounded-full"
+                                    className="w-3 h-3 rounded-full ring-2 ring-white dark:ring-black"
                                     style={{ backgroundColor: languageColors[repo.language] || '#858585' }}
                                 />
                                 <span>{repo.language}</span>
                             </div>
                         )}
                         
-                        <div className="flex items-center gap-1.5 text-light-muted dark:text-dark-muted">
-                            <Star className="w-4 h-4" />
-                            <span>{repo.stargazers_count.toLocaleString()}</span>
+                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 
+                                      group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
+                            <Star className="w-4 h-4 fill-current" />
+                            <span className="font-semibold">{repo.stargazers_count.toLocaleString()}</span>
                         </div>
                         
-                        <div className="flex items-center gap-1.5 text-light-muted dark:text-dark-muted">
+                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400
+                                      group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
                             <GitFork className="w-4 h-4" />
-                            <span>{repo.forks_count.toLocaleString()}</span>
+                            <span className="font-semibold">{repo.forks_count.toLocaleString()}</span>
                         </div>
                         
-                        <span className="text-light-muted dark:text-dark-muted">
+                        <span className="text-gray-500 dark:text-gray-500 text-xs">
                             Updated {formatDate(repo.updated_at)}
                         </span>
                     </div>
@@ -91,12 +147,14 @@ export function RepoCard({ repo }) {
                     href={`https://github.com/${repo.owner.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 group/avatar"
                 >
                     <img
                         src={repo.owner.avatar_url}
                         alt={repo.owner.login}
-                        className="w-12 h-12 rounded-full hover:opacity-80 transition-opacity"
+                        className="w-16 h-16 rounded-full border-2 border-gray-200 dark:border-gray-800
+                                 group-hover/avatar:border-gray-800 dark:group-hover/avatar:border-gray-200
+                                 group-hover/avatar:scale-110 transition-all duration-300 shadow-lg"
                     />
                 </a>
             </div>

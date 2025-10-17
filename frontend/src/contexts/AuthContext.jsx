@@ -40,6 +40,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('github_user');
     setUser(null);
     setIsAuthenticated(false);
+    // Redirect to home page after logout
+    window.location.href = '/';
   };
 
   return (

@@ -10,7 +10,7 @@ const navLinks = [
   { label: 'Search', href: '/search' },
 ];
 
-export function Navbar() {
+export function Navbar({ noBorder = false }) {
   const { user, logout, login } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -30,12 +30,14 @@ export function Navbar() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-50 pt-4 pb-2">
+    <div className="fixed top-0 left-0 right-0 z-50 pt-4 pb-2 bg-white dark:bg-black">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`rounded-full shadow-lg border transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-700 backdrop-blur-sm' 
-            : 'bg-transparent border-transparent'
+        <div className={`rounded-full shadow-lg transition-all duration-300 ${
+          noBorder 
+            ? 'bg-white dark:bg-black' 
+            : isScrolled 
+              ? 'bg-gray-100 dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700' 
+              : 'bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800'
         }`}>
           <div className="flex items-center justify-between h-16 px-6">
           {/* Logo */}
@@ -54,16 +56,22 @@ export function Navbar() {
           {showNavLinks && (
             <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-8">
               <a
-                href="/repositories"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
-              >
-                Repositories
-              </a>
-              <a
-                href="/search"
+                href="/dashboard"
                 className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
               >
                 Search
+              </a>
+              <a
+                href="/saved"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+              >
+                Saved
+              </a>
+              <a
+                href="/analytics"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+              >
+                Analytics
               </a>
             </div>
           )}
@@ -73,10 +81,23 @@ export function Navbar() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Theme Toggle */}
-            <div className="hidden sm:block">
-              <ThemeToggle />
-            </div>
+            {/* Logout Button - Only show when logged in */}
+            {user && (
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400
+                         border-2 border-red-200 dark:border-red-800
+                         hover:bg-red-100 dark:hover:bg-red-950/50
+                         hover:border-red-300 dark:hover:border-red-700
+                         transition-all font-semibold text-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="hidden md:inline">Sign Out</span>
+              </button>
+            )}
             
             {/* Sign In / User Menu */}
             {user ? (
@@ -117,15 +138,13 @@ export function Navbar() {
                         >
                           View Profile
                         </a>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setShowDropdown(false);
-                          }}
-                          className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors text-gray-900 dark:text-gray-100 font-medium"
+                        <a
+                          href="/analytics"
+                          onClick={() => setShowDropdown(false)}
+                          className="block px-3 py-2.5 rounded-lg hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors text-gray-900 dark:text-gray-100 font-medium"
                         >
-                          Logout
-                        </button>
+                          Analytics
+                        </a>
                       </div>
                     </div>
                   </>

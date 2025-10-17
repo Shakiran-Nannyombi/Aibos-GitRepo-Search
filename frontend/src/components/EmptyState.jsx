@@ -4,22 +4,34 @@ import PropTypes from 'prop-types';
 export function EmptyState({ type, message }) {
     if (type === 'no-search') {
         return (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Search className="w-16 h-16 text-light-muted dark:text-dark-muted mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Start Searching</h3>
-                <p className="text-light-muted dark:text-dark-muted max-w-md">
-                    Enter keywords above to search for GitHub repositories. Try searching for topics like 
-                    "react", "machine learning", or "web development".
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="relative">
+                    <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                    <Search className="relative w-20 h-20 text-gray-800 dark:text-gray-200 mb-6 animate-pulse" />
+                </div>
+                <h3 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+                    Start Your Search
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 max-w-lg text-lg leading-relaxed">
+                    Enter keywords above to discover amazing GitHub repositories. Try searching for 
+                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "react"</span>, 
+                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "machine learning"</span>, or 
+                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "web development"</span>.
                 </p>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Inbox className="w-16 h-16 text-light-muted dark:text-dark-muted mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Repositories Found</h3>
-            <p className="text-light-muted dark:text-dark-muted max-w-md">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="relative">
+                <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
+                <Inbox className="relative w-20 h-20 text-gray-800 dark:text-gray-200 mb-6" />
+            </div>
+            <h3 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+                No Repositories Found
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 max-w-lg text-lg">
                 {message || "We couldn't find any repositories matching your search. Try different keywords or adjust your filters."}
             </p>
         </div>
