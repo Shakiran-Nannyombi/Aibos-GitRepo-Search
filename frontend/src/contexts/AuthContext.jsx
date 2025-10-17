@@ -16,7 +16,6 @@ export function AuthProvider({ children }) {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setIsAuthenticated(true);
-        console.log('User restored from localStorage:', parsedUser);
       } catch {
         localStorage.removeItem('github_user');
         localStorage.removeItem('github_token');

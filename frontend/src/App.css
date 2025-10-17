@@ -1,6 +1,25 @@
+:root {
+  /* Custom Color Palette */
+  --bg-primary: #0b0405;
+  --text-primary: #f4e6e9;
+  --color-primary: #dd8c9e;
+  --color-secondary: #8e233b;
+  --color-accent: #d94062;
+  
+  /* Derived colors for better UX */
+  --bg-secondary: #1a0f11;
+  --bg-tertiary: #2d1a1f;
+  --text-secondary: #c4b7ba;
+  --text-muted: #9a8a8d;
+  --border-primary: #3d2a2f;
+  --border-secondary: #4d3a3f;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .logo {

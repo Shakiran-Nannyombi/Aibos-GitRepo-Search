@@ -35,23 +35,20 @@ export function SavedRepoCard({ repo, onRemove }) {
 
     return (
         <div
-            className="group relative p-4 rounded-2xl 
-                      border-2 border-blue-200/30 dark:border-purple-800/30 
-                      bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md
-                      hover:border-blue-400 dark:hover:border-purple-400
-                      hover:bg-blue-50/50 dark:hover:bg-purple-950/30
-                      hover:shadow-2xl hover:scale-[1.02]
+            className="group relative p-4 rounded-2xl border-2 hover:shadow-2xl hover:scale-[1.02]
                       transition-all duration-300 flex flex-col min-h-[280px]"
+            style={{backgroundColor: '#2d1a1f', borderColor: '#4d3a3f'}}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Remove Button */}
             <button
                 onClick={handleRemove}
-                className={`absolute top-2 right-2 p-1.5 rounded-full 
-                          bg-red-500/80 text-white
-                          hover:bg-red-600 transition-all duration-300
+                className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-300
                           ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+                style={{backgroundColor: '#dc2626', color: 'white'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
                 title="Remove from saved"
             >
                 <Trash2 className="w-4 h-4" strokeWidth={2.5} />
@@ -77,7 +74,7 @@ export function SavedRepoCard({ repo, onRemove }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-gray-900 dark:text-gray-100 
-                             hover:text-blue-600 dark:hover:text-purple-400
+                             hover:text-gray-600 dark:hover:text-gray-400
                              transition-colors mb-2 line-clamp-1 text-base leading-tight"
                 >
                     {repo.name}
@@ -124,8 +121,8 @@ export function SavedRepoCard({ repo, onRemove }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`mt-2 flex items-center justify-center gap-2 py-2 px-3 rounded-xl
-                              bg-blue-500 dark:bg-purple-500 text-white font-semibold text-xs
-                              hover:bg-blue-600 dark:hover:bg-purple-600
+                              bg-blue-600 text-white font-semibold text-xs
+                              hover:bg-blue-700
                               transition-all duration-300
                               ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
                 >

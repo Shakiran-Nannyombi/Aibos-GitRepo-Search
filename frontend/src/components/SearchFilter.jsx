@@ -41,13 +41,17 @@ export function SearchFilters({ onFilterChange, isOpen, onToggle }) {
             {/* Toggle Button */}
             <button
                 onClick={onToggle}
-                className="flex items-center gap-2 px-4 py-2 rounded-full
-                         bg-blue-50/30 dark:bg-purple-950/20 backdrop-blur-md
-                         border-2 border-blue-200/30 dark:border-purple-800/30
-                         hover:border-blue-400 dark:hover:border-purple-400
-                         hover:bg-blue-50/60 dark:hover:bg-purple-950/40
-                         text-gray-900 dark:text-gray-100 font-semibold
+                className="flex items-center gap-2 px-4 py-2 rounded-full border-2 font-semibold
                          transition-all duration-300 shadow-lg"
+                style={{backgroundColor: '#d94062', color: '#f4e6e9', borderColor: '#d94062'}}
+                onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#8e233b';
+                    e.target.style.borderColor = '#8e233b';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#d94062';
+                    e.target.style.borderColor = '#d94062';
+                }}
             >
                 <Filter className="w-4 h-4" />
                 Filters
@@ -60,10 +64,8 @@ export function SearchFilters({ onFilterChange, isOpen, onToggle }) {
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
                         onClick={onToggle}
                     />
-                    <div className="fixed right-0 top-0 h-full w-96 
-                                  bg-white dark:bg-black 
-                                  border-l-2 border-gray-200 dark:border-gray-800 
-                                  z-50 shadow-2xl overflow-y-auto">
+                    <div className="fixed right-0 top-0 h-full w-96 border-l-2 z-50 shadow-2xl overflow-y-auto"
+                         style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
                         <div className="p-6 space-y-6">
                             {/* Header */}
                             <div className="flex items-center justify-between pb-4 border-b-2 border-gray-200 dark:border-gray-800">

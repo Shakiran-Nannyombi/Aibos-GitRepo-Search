@@ -6,8 +6,7 @@ import { RepoCard } from './RepoCard';
 import { EmptyState } from './EmptyState';
 import { ErrorAlert } from './ErrorAlert';
 import { LoadingSpinner } from './LoadingSpinner';
-import { Pagination } from './Pagnition';
-import { QuickActions } from './QuickActions';
+import { Pagination } from './Pagination';
 
 export function Dashboard() {
     const [query, setQuery] = useState('');
@@ -123,7 +122,7 @@ export function Dashboard() {
     };
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
+        <div ref={containerRef} className="flex-grow relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
             {/* Animated background grid */}
             <div className="absolute inset-0 opacity-20 pointer-events-none">
                 <div className="absolute inset-0" style={{
@@ -140,14 +139,14 @@ export function Dashboard() {
             <div
                 className="absolute pointer-events-none w-96 h-96 rounded-full opacity-20 blur-3xl transition-all duration-500"
                 style={{
-                    background: 'radial-gradient(circle, rgba(96, 165, 250, 0.5) 0%, rgba(168, 85, 247, 0.3) 50%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(221, 140, 158, 0.2) 0%, rgba(142, 35, 59, 0.1) 50%, transparent 70%)',
                     left: mousePosition.x - 192,
                     top: mousePosition.y - 192,
                 }}
             />
 
             <div className="relative z-10">
-                <Navbar noBorder={true} />
+                <Navbar noBorder={true} isHidden={isFilterOpen} />
 
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
                 {/* Search Section */}
@@ -170,15 +169,13 @@ export function Dashboard() {
                     {/* Results Info and Quick Sort */}
                     {hasSearched && !isLoading && repositories.length > 0 && (
                         <div className="flex flex-wrap items-center gap-4">
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-full 
-                                          bg-blue-50/30 dark:bg-purple-950/20 backdrop-blur-md 
-                                          border-2 border-blue-200/30 dark:border-purple-800/30">
-                                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-md border-2" style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
+                                <span className="text-sm font-semibold" style={{color: '#f4e6e9'}}>
                                     {totalCount.toLocaleString()}
                                 </span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm" style={{color: '#c4b7ba'}}>
                                     repositories found
-                                    {query && <span className="font-medium text-gray-800 dark:text-gray-200"> for "{query}"</span>}
+                                    {query && <span className="font-medium" style={{color: '#f4e6e9'}}> for "{query}"</span>}
                                 </span>
                             </div>
 
@@ -186,11 +183,7 @@ export function Dashboard() {
                             <select
                                 value={quickSort}
                                 onChange={(e) => handleQuickSort(e.target.value)}
-                                className="px-4 py-2 rounded-xl bg-white dark:bg-black 
-                                         border-2 border-blue-200/30 dark:border-purple-800/30
-                                         text-gray-900 dark:text-gray-100 font-medium text-sm
-                                         focus:outline-none focus:border-blue-400 dark:focus:border-purple-400
-                                         transition-all cursor-pointer"
+                                className="px-4 py-2 rounded-xl font-medium text-sm focus:outline-none transition-all cursor-pointer" style={{backgroundColor: '#1a0f11', borderWidth: '2px', borderColor: '#3d2a2f', color: '#f4e6e9'}}
                             >
                                 <option value="stars-desc">Stars (High to Low)</option>
                                 <option value="stars-asc">Stars (Low to High)</option>

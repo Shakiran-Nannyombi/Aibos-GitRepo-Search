@@ -17,7 +17,6 @@ export function AuthCallback() {
                 try {
                     const user = JSON.parse(decodeURIComponent(userParam));
                     
-                    console.log('Auth callback - setting user:', user);
                     
                     localStorage.setItem('github_token', token);
                     localStorage.setItem('github_user', JSON.stringify(user));
@@ -27,15 +26,12 @@ export function AuthCallback() {
                     
                     // Wait a bit for state to update, then redirect
                     setTimeout(() => {
-                        console.log('Redirecting to dashboard...');
                         navigate('/dashboard', { replace: true });
                     }, 500);
                 } catch (error) {
-                    console.error('Failed to parse user data:', error);
                     navigate('/?error=auth_failed', { replace: true });
                 }
             } else {
-                console.error('Missing token or user params');
                 navigate('/?error=missing_params', { replace: true });
             }
         };

@@ -20,7 +20,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            console.error('Failed to copy:', err);
+            // Copy failed silently
         }
     };
 
@@ -75,7 +75,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                 });
             } catch (err) {
                 if (err.name !== 'AbortError') {
-                    console.error('Error sharing:', err);
+                    // Share failed silently
                 }
             }
         } else {
@@ -120,7 +120,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             onClick={() => setActiveTab('share')}
                             className={`flex-1 px-4 py-2 rounded-xl font-semibold transition-all ${
                                 activeTab === 'share'
-                                    ? 'bg-blue-500 dark:bg-purple-500 text-white'
+                                    ? 'bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400'
                             }`}
                         >
@@ -131,7 +131,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             onClick={() => setActiveTab('invite')}
                             className={`flex-1 px-4 py-2 rounded-xl font-semibold transition-all ${
                                 activeTab === 'invite'
-                                    ? 'bg-blue-500 dark:bg-purple-500 text-white'
+                                    ? 'bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400'
                             }`}
                         >
@@ -146,7 +146,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                     {activeTab === 'share' ? (
                         <>
                             {/* Profile Preview */}
-                            <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-2 border-blue-200/30 dark:border-purple-800/30">
+                            <div className="p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 border-2 border-gray-200/30 dark:border-gray-700/30">
                                 <div className="flex items-center gap-3 mb-3">
                                     <img
                                         src={user.avatar_url}
@@ -183,7 +183,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                                             copied
                                                 ? 'bg-green-500 text-white'
-                                                : 'bg-blue-500 dark:bg-purple-500 text-white hover:bg-blue-600 dark:hover:bg-purple-600'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
                                         }`}
                                     >
                                         {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -202,7 +202,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl
                                                  bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100
                                                  border-2 border-gray-200 dark:border-gray-800
-                                                 hover:border-blue-400 dark:hover:border-purple-400
+                                                 hover:border-gray-400 dark:hover:border-gray-500
                                                  transition-all font-semibold"
                                     >
                                         <Mail className="w-4 h-4" />
@@ -213,7 +213,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl
                                                  bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100
                                                  border-2 border-gray-200 dark:border-gray-800
-                                                 hover:border-blue-400 dark:hover:border-purple-400
+                                                 hover:border-gray-400 dark:hover:border-gray-500
                                                  transition-all font-semibold"
                                     >
                                         <MessageCircle className="w-4 h-4" />
@@ -224,7 +224,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl
                                                  bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100
                                                  border-2 border-gray-200 dark:border-gray-800
-                                                 hover:border-blue-400 dark:hover:border-purple-400
+                                                 hover:border-gray-400 dark:hover:border-gray-500
                                                  transition-all font-semibold"
                                     >
                                         <Linkedin className="w-4 h-4" />
@@ -235,7 +235,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl
                                                  bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100
                                                  border-2 border-gray-200 dark:border-gray-800
-                                                 hover:border-blue-400 dark:hover:border-purple-400
+                                                 hover:border-gray-400 dark:hover:border-gray-500
                                                  transition-all font-semibold"
                                     >
                                         <Facebook className="w-4 h-4" />
@@ -249,8 +249,8 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                 <button
                                     onClick={shareViaWebAPI}
                                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl
-                                             bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold
-                                             hover:from-blue-600 hover:to-purple-600
+                                             bg-blue-600 text-white font-semibold
+                                             hover:bg-blue-700
                                              transition-all shadow-lg"
                                 >
                                     <Share2 className="w-4 h-4" />
@@ -277,14 +277,14 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 
                                                  text-gray-900 dark:text-gray-100
                                                  border-2 border-gray-200 dark:border-gray-800
-                                                 focus:outline-none focus:border-blue-400 dark:focus:border-purple-400
+                                                 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500
                                                  transition-all"
                                     />
                                     <button
                                         type="submit"
                                         className="w-full px-4 py-3 rounded-xl font-semibold
-                                                 bg-blue-500 dark:bg-purple-500 text-white
-                                                 hover:bg-blue-600 dark:hover:bg-purple-600
+                                                 bg-blue-600 text-white
+                                                 hover:bg-blue-700
                                                  transition-all shadow-lg"
                                     >
                                         Send Invitation
@@ -304,7 +304,10 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                 setInvites([]);
                                                 localStorage.removeItem('invites');
                                             }}
-                                            className="text-xs text-red-600 dark:text-red-400 hover:underline"
+                                            className="text-xs hover:underline transition-colors"
+                                            style={{color: '#dc2626'}}
+                                            onMouseEnter={(e) => e.target.style.color = '#b91c1c'}
+                                            onMouseLeave={(e) => e.target.style.color = '#dc2626'}
                                         >
                                             Clear All
                                         </button>

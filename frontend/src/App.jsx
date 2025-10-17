@@ -6,7 +6,7 @@ import { Dashboard } from './components/Dashboard'
 import { SavedRepos } from './components/SavedRepos'
 import { Analytics } from './components/Analytics'
 import { AuthCallback } from './components/AuthCallback'
-import { QuickActions } from './components/QuickActions'
+import { Footer } from './components/Footer'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 
@@ -16,14 +16,14 @@ function HomePage() {
   
   // If user is logged in, redirect to dashboard
   if (user || isAuthenticated) {
-    console.log('User is logged in, redirecting to dashboard');
     return <Navigate to="/dashboard" replace />;
   }
   
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300 flex flex-col" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
       <Navbar />
       <Hero />
+      <Footer />
     </div>
   );
 }
@@ -39,14 +39,15 @@ function App() {
             
             {/* Dashboard - already includes its own Navbar */}
             <Route path="/dashboard" element={
-              <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+              <div className="min-h-screen transition-colors duration-300 flex flex-col" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
                 <Dashboard />
+                <Footer />
               </div>
             } />
             
             {/* Saved Repos */}
             <Route path="/saved" element={
-              <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+              <div className="min-h-screen transition-colors duration-300 relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
                 {/* Animated background grid */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                   <div className="absolute inset-0" style={{
@@ -59,18 +60,19 @@ function App() {
                   }} />
                 </div>
                 
-                <div className="relative z-10">
+                <div className="relative z-10 flex flex-col min-h-screen">
                   <Navbar noBorder={true} />
-                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
+                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
                     <SavedRepos />
                   </main>
+                  <Footer />
                 </div>
               </div>
             } />
             
             {/* Analytics */}
             <Route path="/analytics" element={
-              <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+              <div className="min-h-screen transition-colors duration-300 relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
                 {/* Animated background grid */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                   <div className="absolute inset-0" style={{
@@ -83,11 +85,12 @@ function App() {
                   }} />
                 </div>
                 
-                <div className="relative z-10">
+                <div className="relative z-10 flex flex-col min-h-screen">
                   <Navbar noBorder={true} />
-                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
+                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
                     <Analytics />
                   </main>
+                  <Footer />
                 </div>
               </div>
             } />

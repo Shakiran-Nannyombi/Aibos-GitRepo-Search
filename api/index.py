@@ -4,7 +4,8 @@ import os
 # Add the backend directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
-from backend.main import app
+# Import the FastAPI app
+from main import app
 
-# Export the FastAPI app for Vercel
-handler = app
+# Export the app for Vercel
+# Vercel will automatically handle the ASGI interface

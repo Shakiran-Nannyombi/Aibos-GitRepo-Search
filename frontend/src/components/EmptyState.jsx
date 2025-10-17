@@ -6,7 +6,7 @@ export function EmptyState({ type, message }) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="relative">
-                    <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                    <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full"></div>
                     <Search className="relative w-20 h-20 text-gray-800 dark:text-gray-200 mb-6 animate-pulse" />
                 </div>
                 <h3 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">

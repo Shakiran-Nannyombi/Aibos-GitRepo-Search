@@ -197,32 +197,32 @@ export function Hero() {
       {/* Main content */}
       <div className="relative z-10 text-center px-4 max-w-5xl -mt-20">
         {/* Main heading with typing effect */}
-        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-black dark:text-white">
+        <h1 className="text-6xl md:text-8xl font-bold mb-6" style={{color: '#f4e6e9'}}>
           <span className="inline-block">Lens+Github</span>
         </h1>
         
         {/* Typing animation */}
         <div className="h-24 md:h-32 flex items-center justify-center">
-          <h2 className="text-3xl md:text-5xl font-semibold text-gray-800 dark:text-gray-200">
+          <h2 className="text-3xl md:text-5xl font-semibold" style={{color: '#dd8c9e'}}>
             {text}
             <span className="animate-pulse">|</span>
           </h2>
         </div>
 
         {/* Feature highlights */}
-        <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
+        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto" style={{color: '#c4b7ba'}}>
           Your gateway to exploring millions of GitHub repositories. 
           Search, discover, and connect with the world's largest developer community.
         </p>
 
         {/* Call to action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button className="group relative px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+          <button className="group relative px-8 py-4 font-bold text-lg rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl" style={{backgroundColor: '#dd8c9e', color: '#0b0405'}}>
             <span className="relative z-10">Start Exploring</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{background: 'linear-gradient(to right, #8e233b, #d94062)'}} />
           </button>
           
-          <button className="px-8 py-4 border-2 border-black dark:border-white text-black dark:text-white font-bold text-lg rounded-full transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black">
+          <button className="px-8 py-4 border-2 font-bold text-lg rounded-full transition-all duration-300" style={{borderColor: '#dd8c9e', color: '#dd8c9e'}}>
             Learn More
           </button>
         </div>
@@ -230,16 +230,16 @@ export function Hero() {
         {/* Stats */}
         <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="text-4xl font-bold text-black dark:text-white mb-2">100M+</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Repositories</div>
+            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>100M+</div>
+            <div className="text-sm" style={{color: '#9a8a8d'}}>Repositories</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-black dark:text-white mb-2">90M+</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Developers</div>
+            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>90M+</div>
+            <div className="text-sm" style={{color: '#9a8a8d'}}>Developers</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-black dark:text-white mb-2">∞</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Possibilities</div>
+            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>∞</div>
+            <div className="text-sm" style={{color: '#9a8a8d'}}>Possibilities</div>
           </div>
         </div>
       </div>

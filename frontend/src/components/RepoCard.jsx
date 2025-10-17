@@ -61,13 +61,9 @@ export function RepoCard({ repo }) {
     };
 
     return (
-        <div className="group relative p-6 rounded-2xl 
-                      border-2 border-blue-200/30 dark:border-purple-800/30 
-                      bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md
-                      hover:border-blue-400 dark:hover:border-purple-400
-                      hover:bg-blue-50/50 dark:hover:bg-purple-950/30
-                      hover:shadow-2xl hover:scale-[1.01]
-                      transition-all duration-300">
+        <div className="group relative p-6 rounded-2xl border-2 hover:shadow-2xl hover:scale-[1.01]
+                      transition-all duration-300"
+             style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
             {/* Save Button */}
             <button
                 onClick={handleSave}
@@ -75,7 +71,7 @@ export function RepoCard({ repo }) {
                           border-2 transition-all duration-300 z-10
                           ${isSaved 
                             ? 'bg-green-500 border-green-500 text-white hover:bg-green-600' 
-                            : 'bg-white dark:bg-black border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-purple-400'
+                            : 'bg-white dark:bg-black border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
                           }`}
                 title={isSaved ? 'Remove from saved' : 'Save repository'}
             >

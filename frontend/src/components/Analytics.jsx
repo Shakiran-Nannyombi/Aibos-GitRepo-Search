@@ -80,7 +80,6 @@ export function Analytics() {
                 activityMap
             });
         } catch (error) {
-            console.error('Failed to fetch stats:', error);
         } finally {
             setLoading(false);
         }
@@ -103,7 +102,7 @@ export function Analytics() {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
-                    <Activity className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500 dark:text-purple-500" />
+                    <Activity className="w-12 h-12 animate-spin mx-auto mb-4 text-gray-500 dark:text-gray-400" />
                     <p className="text-gray-600 dark:text-gray-400">Loading your analytics...</p>
                 </div>
             </div>
@@ -113,10 +112,10 @@ export function Analytics() {
     return (
         <div className="space-y-6">
             {/* Header with Profile */}
-            <div className="relative p-8 rounded-3xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                          bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-purple-950/20 dark:to-blue-950/20 
+            <div className="relative p-8 rounded-3xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                          bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-gray-900/20 dark:to-gray-800/20 
                           backdrop-blur-md overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 dark:bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gray-500/10 dark:bg-gray-400/10 rounded-full blur-3xl"></div>
                 
                 <div className="relative flex flex-col md:flex-row items-center gap-6">
                     <img
@@ -137,8 +136,8 @@ export function Analytics() {
                             <button
                                 onClick={() => setShowSidebar(true)}
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl
-                                         bg-blue-500 dark:bg-purple-500 text-white font-semibold
-                                         hover:bg-blue-600 dark:hover:bg-purple-600
+                                         bg-blue-600 text-white font-semibold
+                                         hover:bg-blue-700
                                          transition-all shadow-lg"
                             >
                                 <Share2 className="w-4 h-4" />
@@ -155,11 +154,11 @@ export function Analytics() {
                     { icon: Code, label: 'Total Repositories', value: stats?.totalRepos || 0, color: 'blue', gradient: 'from-blue-500 to-blue-600' },
                     { icon: Star, label: 'Total Stars', value: stats?.totalStars || 0, color: 'yellow', gradient: 'from-yellow-500 to-orange-500' },
                     { icon: GitFork, label: 'Total Forks', value: stats?.totalForks || 0, color: 'green', gradient: 'from-green-500 to-emerald-600' },
-                    { icon: GitCommit, label: 'Recent Commits', value: stats?.totalCommits || 0, color: 'purple', gradient: 'from-purple-500 to-pink-600' }
+                    { icon: GitCommit, label: 'Recent Commits', value: stats?.totalCommits || 0, color: 'gray', gradient: 'from-gray-500 to-gray-600' }
                 ].map((stat, i) => (
-                    <div key={i} className="group relative p-6 rounded-2xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                                          bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md
-                                          hover:border-blue-400 dark:hover:border-purple-400
+                    <div key={i} className="group relative p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md
+                                          hover:border-gray-400 dark:hover:border-gray-500
                                           hover:scale-105 transition-all duration-300 overflow-hidden">
                         <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-10 rounded-full blur-2xl`}></div>
                         <stat.icon className={`relative w-10 h-10 mb-3 text-${stat.color}-500`} strokeWidth={2} />
@@ -174,10 +173,10 @@ export function Analytics() {
             </div>
 
             {/* Language Breakdown */}
-            <div className="p-6 rounded-2xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                          bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md">
+            <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
                 <div className="flex items-center gap-2 mb-6">
-                    <TrendingUp className="w-6 h-6 text-blue-500 dark:text-purple-500" />
+                    <TrendingUp className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Top Languages
                     </h2>
@@ -218,10 +217,10 @@ export function Analytics() {
             </div>
 
             {/* Top Repositories */}
-            <div className="p-6 rounded-2xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                          bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md">
+            <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
                 <div className="flex items-center gap-2 mb-6">
-                    <Award className="w-6 h-6 text-blue-500 dark:text-purple-500" />
+                    <Award className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Top Repositories
                     </h2>
@@ -236,7 +235,7 @@ export function Analytics() {
                             rel="noopener noreferrer"
                             className="flex items-center justify-between p-4 rounded-xl
                                      bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800
-                                     hover:border-blue-400 dark:hover:border-purple-400
+                                     hover:border-gray-400 dark:hover:border-gray-500
                                      transition-all group"
                         >
                             <div className="flex-1">
@@ -244,7 +243,7 @@ export function Analytics() {
                                     <span className="text-2xl font-bold text-gray-400 dark:text-gray-600">
                                         #{i + 1}
                                     </span>
-                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-purple-400">
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400">
                                         {repo.name}
                                     </h3>
                                 </div>
@@ -273,10 +272,10 @@ export function Analytics() {
             {/* Activity Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* Recent Activity Count */}
-                <div className="p-6 rounded-2xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                              bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md">
+                <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                              bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
                     <div className="flex items-center gap-2 mb-4">
-                        <Calendar className="w-6 h-6 text-blue-500 dark:text-purple-500" />
+                        <Calendar className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             Activity (Last 30 Days)
                         </h2>
@@ -290,10 +289,10 @@ export function Analytics() {
                 </div>
 
                 {/* Repo Breakdown */}
-                <div className="p-6 rounded-2xl border-2 border-blue-200/30 dark:border-purple-800/30 
-                              bg-blue-50/20 dark:bg-purple-950/15 backdrop-blur-md">
+                <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
+                              bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
                     <div className="flex items-center gap-2 mb-4">
-                        <Activity className="w-6 h-6 text-blue-500 dark:text-purple-500" />
+                        <Activity className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             Repository Breakdown
                         </h2>

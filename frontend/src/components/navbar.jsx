@@ -10,7 +10,7 @@ const navLinks = [
   { label: 'Search', href: '/search' },
 ];
 
-export function Navbar({ noBorder = false }) {
+export function Navbar({ noBorder = false, isHidden = false }) {
   const { user, logout, login } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,16 +29,20 @@ export function Navbar({ noBorder = false }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  if (isHidden) {
+    return null;
+  }
+
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 pt-4 pb-2 bg-white dark:bg-black">
+    <div className="fixed top-0 left-0 right-0 z-50 pt-4 pb-2" style={{backgroundColor: '#0b0405'}}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`rounded-full shadow-lg transition-all duration-300 ${
           noBorder 
-            ? 'bg-white dark:bg-black' 
+            ? '' 
             : isScrolled 
-              ? 'bg-purple-50 dark:bg-purple-950/20 border-2 border-purple-200 dark:border-purple-900' 
-              : 'bg-white dark:bg-black border-2 border-purple-100 dark:border-purple-900/40'
-        }`}>
+              ? 'border-2' 
+              : 'border-2'
+        }`} style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
           <div className="flex items-center justify-between h-16 px-6">
           {/* Logo */}
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -47,7 +51,7 @@ export function Navbar({ noBorder = false }) {
               alt="GitHub Repository Search"
               className="w-10 h-10"
             />
-            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            <span className="text-xl font-bold" style={{color: '#f4e6e9'}}>
               Lens+Github
             </span>
           </div>
@@ -57,19 +61,28 @@ export function Navbar({ noBorder = false }) {
             <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-8">
               <a
                 href="/dashboard"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+                className="px-4 py-2 text-sm font-semibold transition-colors rounded-full"
+                style={{color: '#f4e6e9', backgroundColor: '#dd8c9e'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#8e233b'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#dd8c9e'}
               >
                 Search
               </a>
               <a
                 href="/saved"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+                className="px-4 py-2 text-sm font-semibold transition-colors rounded-full"
+                style={{color: '#f4e6e9', backgroundColor: '#8e233b'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#d94062'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#8e233b'}
               >
                 Saved
               </a>
               <a
                 href="/analytics"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+                className="px-4 py-2 text-sm font-semibold transition-colors rounded-full"
+                style={{color: '#f4e6e9', backgroundColor: '#d94062'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#dd8c9e'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#d94062'}
               >
                 Analytics
               </a>
@@ -85,12 +98,7 @@ export function Navbar({ noBorder = false }) {
             {user && (
               <button
                 onClick={logout}
-                className="flex items-center gap-2 px-4 py-2 rounded-full
-                         bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400
-                         border-2 border-red-200 dark:border-red-800
-                         hover:bg-red-100 dark:hover:bg-red-950/50
-                         hover:border-red-300 dark:hover:border-red-700
-                         transition-all font-semibold text-sm"
+                className="px-4 py-2 rounded-full transition-all duration-300 font-medium" style={{color: '#c4b7ba'}}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
