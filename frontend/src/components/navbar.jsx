@@ -36,8 +36,8 @@ export function Navbar({ noBorder = false }) {
           noBorder 
             ? 'bg-white dark:bg-black' 
             : isScrolled 
-              ? 'bg-gray-100 dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700' 
-              : 'bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800'
+              ? 'bg-purple-50 dark:bg-purple-950/20 border-2 border-purple-200 dark:border-purple-900' 
+              : 'bg-white dark:bg-black border-2 border-purple-100 dark:border-purple-900/40'
         }`}>
           <div className="flex items-center justify-between h-16 px-6">
           {/* Logo */}
