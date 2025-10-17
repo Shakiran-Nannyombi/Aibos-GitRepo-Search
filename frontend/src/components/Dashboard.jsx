@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Navbar } from './Navbar';
+import { Navbar } from './navbar';
 import { SearchBar } from './SearchBar';
-import { SearchFilters } from './SearchFilters';
+import { SearchFilters } from './SearchFilter';
 import { RepoCard } from './RepoCard';
 import { EmptyState } from './EmptyState';
 import { ErrorAlert } from './ErrorAlert';
 import { LoadingSpinner } from './LoadingSpinner';
-import { Pagination } from './Pagination';
+import { Pagination } from './Pagnition';
 
 export function Dashboard() {
     const [query, setQuery] = useState('');
@@ -90,7 +90,7 @@ export function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-white dark:bg-black">
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

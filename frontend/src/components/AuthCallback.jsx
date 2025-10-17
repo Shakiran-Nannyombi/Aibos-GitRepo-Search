@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from './LoadingSpinner';
 
 export function AuthCallback() {
     const { setUser } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -14,23 +16,32 @@ export function AuthCallback() {
             if (token && userParam) {
                 try {
                     const user = JSON.parse(decodeURIComponent(userParam));
+                    
+                    console.log('Auth callback - setting user:', user);
+                    
                     localStorage.setItem('github_token', token);
                     localStorage.setItem('github_user', JSON.stringify(user));
+                    
+                    // Set user in context
                     setUser(user);
                     
-                    // Redirect to dashboard
-                    window.location.href = '/';
+                    // Wait a bit for state to update, then redirect
+                    setTimeout(() => {
+                        console.log('Redirecting to dashboard...');
+                        navigate('/dashboard', { replace: true });
+                    }, 500);
                 } catch (error) {
                     console.error('Failed to parse user data:', error);
-                    window.location.href = '/?error=auth_failed';
+                    navigate('/?error=auth_failed', { replace: true });
                 }
             } else {
-                window.location.href = '/?error=missing_params';
+                console.error('Missing token or user params');
+                navigate('/?error=missing_params', { replace: true });
             }
         };
 
         handleCallback();
-    }, [setUser]);
+    }, [setUser, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center">

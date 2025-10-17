@@ -141,7 +141,7 @@ export function Hero() {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8"
     >
       {/* Animated background grid */}
       <div className="absolute inset-0 opacity-20">
@@ -195,7 +195,7 @@ export function Hero() {
       />
 
       {/* Main content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl">
+      <div className="relative z-10 text-center px-4 max-w-5xl -mt-20">
         {/* Main heading with typing effect */}
         <h1 className="text-6xl md:text-8xl font-bold mb-6 text-black dark:text-white">
           <span className="inline-block">Lens+Github</span>

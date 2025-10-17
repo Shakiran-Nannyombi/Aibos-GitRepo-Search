@@ -13,13 +13,21 @@ export function AuthProvider({ children }) {
 
     if (token && storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
         setIsAuthenticated(true);
+        console.log('User restored from localStorage:', parsedUser);
       } catch {
         localStorage.removeItem('github_user');
+        localStorage.removeItem('github_token');
       }
     }
   }, []);
+
+  // Update isAuthenticated when user changes
+  useEffect(() => {
+    setIsAuthenticated(!!user);
+  }, [user]);
 
   const login = () => {
     // Redirect to backend OAuth endpoint
