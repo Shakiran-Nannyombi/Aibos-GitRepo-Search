@@ -118,18 +118,25 @@ export function Hero() {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, phrases, typingSpeed]);
 
-  // Generate GitHub-themed floating elements
+  // Generate GitHub-themed floating elements in a grid pattern
   const iconComponents = [StarIcon, GitBranchIcon, CodeIcon, GitCommitIcon, SearchIcon, FolderIcon, GitPullRequestIcon, PackageIcon];
   
-  const floatingElements = Array.from({ length: 25 }, (_, i) => ({
-    id: i,
-    initialX: Math.random() * 100,
-    initialY: Math.random() * 100,
-    size: Math.random() * 40 + 30,
-    speed: Math.random() * 0.5 + 0.2,
-    Icon: iconComponents[Math.floor(Math.random() * iconComponents.length)],
-    rotation: Math.random() * 360
-  }));
+  const floatingElements = [];
+  const cols = 8;
+  const rows = 6;
+  
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      floatingElements.push({
+        id: row * cols + col,
+        initialX: (col / (cols - 1)) * 100,
+        initialY: (row / (rows - 1)) * 100,
+        size: 40 + (Math.random() * 20 - 10),
+        Icon: iconComponents[(row * cols + col) % iconComponents.length],
+        rotation: Math.random() * 360
+      });
+    }
+  }
 
   return (
     <div
@@ -191,7 +198,7 @@ export function Hero() {
       <div className="relative z-10 text-center px-4 max-w-5xl">
         {/* Main heading with typing effect */}
         <h1 className="text-6xl md:text-8xl font-bold mb-6 text-black dark:text-white">
-          <span className="inline-block">RepoScope</span>
+          <span className="inline-block">Lens+Github</span>
         </h1>
         
         {/* Typing animation */}

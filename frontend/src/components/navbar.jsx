@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLocation } from 'react-router-dom';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -14,6 +15,10 @@ export function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme } = useTheme();
+  const location = useLocation();
+  
+  // Show nav links only when user is logged in and not on home page
+  const showNavLinks = user && location.pathname !== '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,22 +46,30 @@ export function Navbar() {
               className="w-10 h-10"
             />
             <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              RepoScope
+              Lens+Github
             </span>
           </div>
 
-          {/* Center Navigation Links */}
-          <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-8">
-            {navLinks.map((link) => (
+          {/* Center Navigation Links - Only show when logged in */}
+          {showNavLinks && (
+            <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-8">
               <a
-                key={link.label}
-                href={link.href}
+                href="/repositories"
                 className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
               >
-                {link.label}
+                Repositories
               </a>
-            ))}
-          </div>
+              <a
+                href="/search"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-gray-900 transition-colors rounded-full"
+              >
+                Search
+              </a>
+            </div>
+          )}
+          
+          {/* Spacer when no nav links */}
+          {!showNavLinks && <div className="flex-1" />}
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -127,13 +140,15 @@ export function Navbar() {
               </button>
             )}
 
-            {/* CTA Button */}
-            <button 
-              onClick={login}
-              className="px-5 py-2 rounded-full bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900 text-sm font-bold border-2 border-gray-800 dark:border-gray-200 hover:bg-gray-900 dark:hover:bg-gray-300 transition-all"
-            >
-              Get Started
-            </button>
+            {/* CTA Button - Only show when not logged in */}
+            {!user && (
+              <button 
+                onClick={login}
+                className="px-5 py-2 rounded-full bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900 text-sm font-bold border-2 border-gray-800 dark:border-gray-200 hover:bg-gray-900 dark:hover:bg-gray-300 transition-all"
+              >
+                Get Started
+              </button>
+            )}
           </div>
           </div>
         </div>

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 export function LoadingSpinner({ message = 'Loading...' }) {
     return (
         <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-light-accent dark:text-dark-accent" />
-            <p className="mt-4 text-light-muted dark:text-dark-muted">{message}</p>
+            <Loader2 className="w-12 h-12 animate-spin text-gray-800 dark:text-gray-200" />
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{message}</p>
         </div>
     );
 }
