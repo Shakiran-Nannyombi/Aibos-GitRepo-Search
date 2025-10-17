@@ -49,15 +49,3 @@ export function useAuth() {
   }
   return context;
 }
-
-/**
- * @typedef {Object} AuthProviderProps
- * @property {React.ReactNode} children
- */
-
-/**
- * @param {AuthProviderProps} props
- */
-export function AuthProvider({ children }) {
-  // ... existing code ...
-}
