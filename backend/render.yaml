@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: aibos-github-api
+    name: aibos-gitrepo-search
     runtime: python
     plan: free
     buildCommand: uv sync --frozen

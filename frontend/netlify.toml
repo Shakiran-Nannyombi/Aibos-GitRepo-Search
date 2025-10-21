@@ -11,10 +11,10 @@
   status = 200
 
 [context.production.environment]
-  VITE_BACKEND_URL = "https://aibos-github-api.onrender.com"
+  VITE_BACKEND_URL = "https://aibos-gitrepo-search.onrender.com"
 
 [context.deploy-preview.environment]
-  VITE_BACKEND_URL = "https://aibos-github-api.onrender.com"
+  VITE_BACKEND_URL = "https://aibos-gitrepo-search.onrender.com"
 
 [context.branch-deploy.environment]
-  VITE_BACKEND_URL = "https://aibos-github-api.onrender.com"
+  VITE_BACKEND_URL = "https://aibos-gitrepo-search.onrender.com"

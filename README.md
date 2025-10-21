@@ -7,7 +7,7 @@ A modern, secure web application for searching and discovering GitHub repositori
 ## 🚀 Live Demo
 
 **Frontend**: [https://lensgithub.netlify.app/](https://lensgithub.netlify.app/)  
-**Backend API**: [https://aibos-github-api.onrender.com](https://aibos-github-api.onrender.com)
+**Backend API**: [https://aibos-gitrepo-search.onrender.com](https://aibos-gitrepo-search.onrender.com)
 
 ## Overview
 
@@ -139,7 +139,7 @@ The application uses modern development practices:
 
 ### Production URLs
 - **Frontend**: [https://lensgithub.netlify.app/](https://lensgithub.netlify.app/) (Netlify)
-- **Backend**: [https://aibos-github-api.onrender.com](https://aibos-github-api.onrender.com) (Render)
+- **Backend**: [https://aibos-gitrepo-search.onrender.com](https://aibos-gitrepo-search.onrender.com) (Render)
 
 ### Security Features
 - ✅ **CSRF Protection**: State parameter validation in OAuth flow
