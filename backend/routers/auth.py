@@ -30,8 +30,6 @@ async def github_auth(request: Request, settings: Settings = Depends(get_setting
     
     if render_url:
         backend_callback_url = f"{render_url}/auth/callback"
-    elif vercel_url:
-        backend_callback_url = f"https://{vercel_url}/auth/callback"
     else:
         backend_callback_url = "http://localhost:8000/auth/callback"
     
