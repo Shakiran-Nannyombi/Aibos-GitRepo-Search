@@ -20,6 +20,7 @@ This application provides an intuitive interface to search through GitHub's vast
 ## Tech Stack
 
 ### Backend
+
 - **FastAPI**: Modern Python web framework
 - **Pydantic**: Data validation and settings management
 - **HTTPX**: Async HTTP client for GitHub API integration
