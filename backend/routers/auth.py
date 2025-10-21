@@ -1,10 +1,14 @@
 import secrets
 import logging
-from fastapi import Request
+import os
+import json
+from datetime import datetime, timedelta
+import jwt
+from fastapi import Request, Header
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 import httpx
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from config import get_settings, Settings
 from models.user import User
 from models.searchrequest import SearchRequest
@@ -14,43 +18,90 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
 
+def get_frontend_url(request: Request) -> str:
+    """Dynamically determine frontend URL based on request origin"""
+    # Check for Origin header first (most reliable)
+    origin = request.headers.get("origin")
+    if origin:
+        return origin
+    
+    # Check for Referer header as fallback
+    referer = request.headers.get("referer")
+    if referer:
+        parsed = urlparse(referer)
+        return f"{parsed.scheme}://{parsed.netloc}"
+    
+    # Environment variable fallback
+    frontend_url = os.environ.get("FRONTEND_URL")
+    if frontend_url:
+        return frontend_url
+    
+    # Default based on request host but different port for development
+    if request.base_url.hostname in ['localhost', '127.0.0.1']:
+        return f"{request.base_url.scheme}://{request.base_url.hostname}:5173"
+    
+    # Production fallback - same domain as backend
+    return f"{request.base_url.scheme}://{request.base_url.hostname}"
+
+
+def get_callback_url(request: Request) -> str:
+    """Dynamically determine callback URL based on request"""
+    # For local development
+    if request.base_url.hostname in ['localhost', '127.0.0.1']:
+        return f"{request.base_url.scheme}://{request.base_url.hostname}:8000/auth/callback"
+    
+    # For production - use the actual host
+    return f"{request.base_url.scheme}://{request.base_url.hostname}/auth/callback"
+
+
 @router.get("/github")
-async def github_auth(request: Request, settings: Settings = Depends(get_settings)):
+async def github_auth(
+    request: Request, 
+    settings: Settings = Depends(get_settings),
+    origin: str = Header(None)
+):
     """Redirect to GitHub OAuth page with CSRF protection"""
     # Generate CSRF state token
     state = secrets.token_urlsafe(32)
     
-    # In production, store state in Redis/database
-    # For now, we'll validate it in callback
+    # Get dynamic callback URL
+    callback_url = get_callback_url(request)
     
-    import os
-    # Get frontend URL from environment variables
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
-    
-    # For local development, the backend and frontend are on different ports
-    if request.base_url.hostname in ['localhost', '127.0.0.1']:
-        callback_url = f"{request.base_url.scheme}://{request.base_url.hostname}:8000/auth/callback"
-    else:
-        callback_url = f"{request.base_url.scheme}://{request.base_url.hostname}/auth/callback"
+    # Store frontend URL in state for later use
+    frontend_url = get_frontend_url(request)
     
     params = {
         "client_id": settings.github_client_id,
         "redirect_uri": callback_url,
         "scope": "read:user user:email",
-        "state": state  # CSRF protection
+        "state": state
     }
     auth_url = f"{settings.github_oauth_base}/login/oauth/authorize?{urlencode(params)}"
     
-    # Set state in secure cookie
+    # Create redirect response
     response = RedirectResponse(auth_url)
+    
+    # Set state and frontend URL in secure cookies
     response.set_cookie(
         "oauth_state", 
         state, 
         max_age=600,  # 10 minutes
         httponly=True,
-        secure=True,
+        secure=request.base_url.scheme == "https",
         samesite="lax"
     )
+    
+    # Store frontend URL for callback redirect
+    response.set_cookie(
+        "frontend_url",
+        frontend_url,
+        max_age=600,  # 10 minutes
+        httponly=True,
+        secure=request.base_url.scheme == "https",
+        samesite="lax"
+    )
+    
+    logger.info(f"Initiating OAuth flow - Frontend: {frontend_url}, Callback: {callback_url}")
     return response
 
 
@@ -70,6 +121,12 @@ async def github_callback(
         logger.warning("Invalid state parameter in OAuth callback")
         raise HTTPException(status_code=400, detail="Invalid state parameter")
     
+    # Get stored frontend URL
+    frontend_url = request.cookies.get("frontend_url")
+    if not frontend_url:
+        # Fallback to dynamic detection
+        frontend_url = get_frontend_url(request)
+    
     try:
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
@@ -84,12 +141,14 @@ async def github_callback(
             )
             
             if token_response.status_code != 200:
+                logger.error(f"Token exchange failed: {token_response.status_code}")
                 raise HTTPException(status_code=400, detail="Failed to get access token")
             
             token_data = token_response.json()
             access_token = token_data.get("access_token")
             
             if not access_token:
+                logger.error("No access token in response")
                 raise HTTPException(status_code=400, detail="No access token received")
             
             # Get user information
@@ -102,35 +161,28 @@ async def github_callback(
             )
             
             if user_response.status_code != 200:
+                logger.error(f"User info fetch failed: {user_response.status_code}")
                 raise HTTPException(status_code=400, detail="Failed to get user info")
             
             user_data = user_response.json()
             
-            # Create JWT token
-            token_data = {
-                "sub": str(user_data["id"]),
-                "name": user_data["name"],
-                "login": user_data["login"],
-                "exp": datetime.utcnow() + timedelta(days=1)
-            }
-            token = jwt.encode(token_data, JWT_SECRET, algorithm="HS256")
-            
-            # Serialize user data for cookie
-            user_data_json = json.dumps(user_data)
-            
-            # Get frontend URL from environment variables
-            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+            # Create User object
+            user = User(**user_data)
             
             # Create redirect response to frontend callback URL
-            response = RedirectResponse(url=f"{frontend_url}/auth/callback")
+            callback_redirect = f"{frontend_url}/auth/callback"
+            response = RedirectResponse(url=callback_redirect)
+            
+            # Determine if we're in production
+            is_production = request.base_url.scheme == "https"
             
             # Set secure HTTP-only cookies
             response.set_cookie(
                 key="github_token",
-                value=token,
+                value=access_token,
                 max_age=3600,  # 1 hour
                 httponly=True,
-                secure=os.environ.get("NODE_ENV") == "production",
+                secure=is_production,
                 samesite="lax"
             )
             
@@ -140,15 +192,32 @@ async def github_callback(
                 value=user.model_dump_json(),
                 max_age=3600,
                 httponly=False,  # Frontend needs to read this
-                secure=os.environ.get("NODE_ENV") == "production",
+                secure=is_production,
                 samesite="lax"
             )
             
-            # Clear state cookie
+            # Clear temporary cookies
             response.delete_cookie("oauth_state")
-            logger.info(f"OAuth authentication successful for user: {user.login}")
+            response.delete_cookie("frontend_url")
+            
+            logger.info(f"OAuth authentication successful for user: {user.login}, redirecting to: {callback_redirect}")
             return response
             
     except Exception as e:
         logger.error(f"OAuth authentication failed: {str(e)}")
-        raise HTTPException(status_code=500, detail="Authentication failed")
+        # Redirect to frontend with error
+        error_redirect = f"{frontend_url}/auth/error?message=authentication_failed"
+        return RedirectResponse(url=error_redirect)
+
+
+@router.post("/logout")
+async def logout(request: Request):
+    """Logout user by clearing cookies"""
+    frontend_url = get_frontend_url(request)
+    
+    response = RedirectResponse(url=frontend_url)
+    response.delete_cookie("github_token")
+    response.delete_cookie("user_data")
+    
+    logger.info("User logged out successfully")
+    return response
