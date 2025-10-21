@@ -1,8 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional
 import httpx
+import logging
 from config import get_settings, Settings
 from models.searchresponse import SearchResponse
+from models.searchrequest import SearchRequest
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["api"])
 
@@ -19,24 +23,40 @@ async def search_repositories(
     authorization: Optional[str] = None,
     settings: Settings = Depends(get_settings)
 ):
-    """Search GitHub repositories"""
+    """Search GitHub repositories with input validation"""
     
-    # Build search query
-    search_query = q
+    # Validate input using SearchRequest model
+    try:
+        search_params = SearchRequest(
+            q=q,
+            language=language,
+            min_stars=min_stars,
+            sort=sort,
+            order=order,
+            page=page,
+            per_page=per_page
+        )
+        logger.info(f"Search request: query='{search_params.q}', page={search_params.page}")
+    except ValueError as e:
+        logger.warning(f"Invalid search parameters: {str(e)}")
+        raise HTTPException(status_code=422, detail=str(e))
     
-    if language:
-        search_query += f" language:{language}"
+    # Build search query using validated parameters
+    search_query = search_params.q
     
-    if min_stars:
-        search_query += f" stars:>={min_stars}"
+    if search_params.language:
+        search_query += f" language:{search_params.language}"
+    
+    if search_params.min_stars:
+        search_query += f" stars:>={search_params.min_stars}"
     
     # Prepare request parameters
     params = {
         "q": search_query,
-        "sort": sort,
-        "order": order,
-        "page": page,
-        "per_page": per_page,
+        "sort": search_params.sort,
+        "order": search_params.order,
+        "page": search_params.page,
+        "per_page": search_params.per_page,
     }
     
     # Prepare headers
@@ -59,21 +79,24 @@ async def search_repositories(
             )
             
             if response.status_code == 422:
+                logger.warning(f"Invalid search query: {search_query}")
                 raise HTTPException(
                     status_code=422,
                     detail="Invalid search query. Please check your parameters."
                 )
             
             if response.status_code == 403:
+                logger.warning("GitHub API rate limit exceeded")
                 raise HTTPException(
                     status_code=403,
                     detail="API rate limit exceeded. Please try again later or authenticate."
                 )
             
             if response.status_code != 200:
+                logger.error(f"GitHub API error: {response.status_code}")
                 raise HTTPException(
                     status_code=response.status_code,
-                    detail=f"GitHub API error: {response.text}"
+                    detail="GitHub API error occurred"
                 )
             
             data = response.json()
@@ -85,9 +108,11 @@ async def search_repositories(
             )
         
         except httpx.TimeoutException:
+            logger.error("GitHub API request timeout")
             raise HTTPException(status_code=504, detail="Request timeout. Please try again.")
         except httpx.RequestError as e:
-            raise HTTPException(status_code=503, detail=f"Connection error: {str(e)}")
+            logger.error(f"GitHub API connection error: {str(e)}")
+            raise HTTPException(status_code=503, detail="Connection error occurred")
 
 
 @router.get("/user")

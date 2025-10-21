@@ -43,14 +43,17 @@ def test_github_callback_success(client: TestClient):
         )
     )
     
-    response = client.get("/auth/callback?code=test_code", follow_redirects=False)
+    # Set oauth_state cookie and call with state parameter
+    client.cookies.set("oauth_state", "test_state")
+    response = client.get("/auth/callback?code=test_code&state=test_state", follow_redirects=False)
     
     assert response.status_code == 307  # Redirect to frontend
     location = response.headers["location"]
     
     assert "localhost:3000/auth/callback" in location
-    assert "token=test_access_token" in location
-    assert "user=" in location
+    # Check for secure cookies instead of URL parameters
+    assert "auth_token" in response.cookies
+    assert "user_data" in response.cookies
 
 
 @respx.mock 
@@ -61,7 +64,9 @@ def test_github_callback_token_error(client: TestClient):
         return_value=httpx.Response(400, json={"error": "bad_verification_code"})
     )
     
-    response = client.get("/auth/callback?code=invalid_code")
+    # Set oauth_state cookie and call with state parameter
+    client.cookies.set("oauth_state", "test_state")
+    response = client.get("/auth/callback?code=invalid_code&state=test_state")
     
     assert response.status_code == 500  # Exception handler wraps it in 500
     assert "Authentication failed" in response.json()["detail"]
@@ -83,7 +88,9 @@ def test_github_callback_user_error(client: TestClient):
         return_value=httpx.Response(401, json={"message": "Bad credentials"})
     )
     
-    response = client.get("/auth/callback?code=test_code")
+    # Set oauth_state cookie and call with state parameter
+    client.cookies.set("oauth_state", "test_state")
+    response = client.get("/auth/callback?code=test_code&state=test_state")
     
     assert response.status_code == 500  # Exception handler wraps it in 500
     assert "Authentication failed" in response.json()["detail"]
@@ -94,3 +101,21 @@ def test_github_callback_missing_code(client: TestClient):
     response = client.get("/auth/callback")
     
     assert response.status_code == 422  # Validation error for missing required parameter
+
+
+def test_github_callback_invalid_state(client: TestClient):
+    """Test GitHub callback with invalid state parameter"""
+    # Set different state in cookie vs URL
+    client.cookies.set("oauth_state", "stored_state")
+    response = client.get("/auth/callback?code=test_code&state=different_state")
+    
+    assert response.status_code == 400
+    assert "Invalid state parameter" in response.json()["detail"]
+
+
+def test_github_callback_missing_state_cookie(client: TestClient):
+    """Test GitHub callback without state cookie"""
+    response = client.get("/auth/callback?code=test_code&state=test_state")
+    
+    assert response.status_code == 400
+    assert "Invalid state parameter" in response.json()["detail"]

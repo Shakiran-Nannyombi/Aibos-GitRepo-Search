@@ -119,7 +119,7 @@ def test_search_repositories_invalid_query(client: TestClient):
     response = client.get("/api/search?q=")
     
     assert response.status_code == 422
-    assert "Invalid search query" in response.json()["detail"]
+    assert "Query cannot be empty" in response.json()["detail"]
 
 
 @respx.mock

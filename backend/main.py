@@ -9,10 +9,16 @@ app = FastAPI(title="Lens+Github")
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173", 
+        "https://your-frontend-domain.com",  # Replace with your actual frontend domain
+        "https://aibos-github-search.netlify.app",  # Example Netlify domain
+        "https://aibos-github-search.vercel.app"   # Example Vercel domain
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Include routers

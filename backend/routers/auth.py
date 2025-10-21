@@ -1,17 +1,28 @@
+import secrets
+import logging
+from fastapi import Request
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 import httpx
 from urllib.parse import urlencode
 from config import get_settings, Settings
 from models.user import User
+from models.searchrequest import SearchRequest
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
 
 @router.get("/github")
-async def github_auth(settings: Settings = Depends(get_settings)):
-    """Redirect to GitHub OAuth page"""
-    # Use the current request URL to build the callback URL
+async def github_auth(request: Request, settings: Settings = Depends(get_settings)):
+    """Redirect to GitHub OAuth page with CSRF protection"""
+    # Generate CSRF state token
+    state = secrets.token_urlsafe(32)
+    
+    # In production, store state in Redis/database
+    # For now, we'll validate it in callback
+    
     import os
     vercel_url = os.environ.get("VERCEL_URL")
     if vercel_url:
@@ -23,18 +34,38 @@ async def github_auth(settings: Settings = Depends(get_settings)):
         "client_id": settings.github_client_id,
         "redirect_uri": backend_callback_url,
         "scope": "read:user user:email",
+        "state": state  # CSRF protection
     }
     auth_url = f"{settings.github_oauth_base}/login/oauth/authorize?{urlencode(params)}"
-    return RedirectResponse(auth_url)
+    
+    # Set state in secure cookie
+    response = RedirectResponse(auth_url)
+    response.set_cookie(
+        "oauth_state", 
+        state, 
+        max_age=600,  # 10 minutes
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    return response
 
 
 @router.get("/callback")
 async def github_callback(
     code: str,
+    state: str,
+    request: Request,
     settings: Settings = Depends(get_settings)
 ):
-    """Handle GitHub OAuth callback"""
-    print(f"Received callback with code: {code[:10]}...")
+    """Handle GitHub OAuth callback with CSRF validation"""
+    logger.info("Processing OAuth callback")
+    
+    # Validate CSRF state
+    stored_state = request.cookies.get("oauth_state")
+    if not stored_state or stored_state != state:
+        logger.warning("Invalid state parameter in OAuth callback")
+        raise HTTPException(status_code=400, detail="Invalid state parameter")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -49,19 +80,14 @@ async def github_callback(
                 }
             )
             
-            print(f"Token response status: {token_response.status_code}")
-            print(f"Token response body: {token_response.text}")
-            
             if token_response.status_code != 200:
-                raise HTTPException(status_code=400, detail=f"Failed to get access token: {token_response.text}")
+                raise HTTPException(status_code=400, detail="Failed to get access token")
             
             token_data = token_response.json()
-            print(f"Token data: {token_data}")
             access_token = token_data.get("access_token")
             
             if not access_token:
-                error_msg = token_data.get("error_description", token_data.get("error", "No access token received"))
-                raise HTTPException(status_code=400, detail=f"No access token received: {error_msg}")
+                raise HTTPException(status_code=400, detail="No access token received")
             
             # Get user information
             user_response = await client.get(
@@ -86,20 +112,33 @@ async def github_callback(
                 bio=user_data.get("bio"),
             )
             
-            # Convert user to JSON string
-            import json
-            user_json = json.dumps(user.model_dump())
+            # Redirect with secure token handling
+            redirect_url = f"{settings.frontend_url}/auth/callback"
+            response = RedirectResponse(redirect_url)
             
-            # Redirect back to frontend with token and user data
-            redirect_params = {
-                "token": access_token,
-                "user": user_json,
-            }
-            redirect_url = f"{settings.frontend_url}/auth/callback?{urlencode(redirect_params)}"
-            print(f"Redirecting to: {redirect_url}")
-            return RedirectResponse(redirect_url)
+            # Set secure HTTP-only cookies instead of URL params
+            response.set_cookie(
+                "auth_token",
+                access_token,
+                max_age=3600,  # 1 hour
+                httponly=True,
+                secure=True,
+                samesite="strict"
+            )
+            response.set_cookie(
+                "user_data",
+                user.model_dump_json(),
+                max_age=3600,
+                httponly=False,  # Frontend needs to read this
+                secure=True,
+                samesite="strict"
+            )
+            
+            # Clear state cookie
+            response.delete_cookie("oauth_state")
+            logger.info(f"OAuth authentication successful for user: {user.login}")
+            return response
+            
     except Exception as e:
-        print(f"Error in callback: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Authentication failed: {str(e)}")
+        logger.error(f"OAuth authentication failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Authentication failed")
