@@ -24,18 +24,18 @@ async def github_auth(request: Request, settings: Settings = Depends(get_setting
     # For now, we'll validate it in callback
     
     import os
-    # Check for production environment variables
-    render_url = os.environ.get("RENDER_EXTERNAL_URL")
-    vercel_url = os.environ.get("VERCEL_URL")
+    # Get frontend URL from environment variables
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
     
-    if render_url:
-        backend_callback_url = f"{render_url}/auth/callback"
+    # For local development, the backend and frontend are on different ports
+    if request.base_url.hostname in ['localhost', '127.0.0.1']:
+        callback_url = f"{request.base_url.scheme}://{request.base_url.hostname}:8000/auth/callback"
     else:
-        backend_callback_url = "http://localhost:8000/auth/callback"
+        callback_url = f"{request.base_url.scheme}://{request.base_url.hostname}/auth/callback"
     
     params = {
         "client_id": settings.github_client_id,
-        "redirect_uri": backend_callback_url,
+        "redirect_uri": callback_url,
         "scope": "read:user user:email",
         "state": state  # CSRF protection
     }
@@ -56,7 +56,7 @@ async def github_auth(request: Request, settings: Settings = Depends(get_setting
 
 @router.get("/callback")
 async def github_callback(
-    code: str,
+    code: str, 
     state: str,
     request: Request,
     settings: Settings = Depends(get_settings)
@@ -106,35 +106,42 @@ async def github_callback(
             
             user_data = user_response.json()
             
-            # Create user object
-            user = User(
-                id=user_data["id"],
-                login=user_data["login"],
-                avatar_url=user_data["avatar_url"],
-                name=user_data.get("name"),
-                bio=user_data.get("bio"),
-            )
+            # Create JWT token
+            token_data = {
+                "sub": str(user_data["id"]),
+                "name": user_data["name"],
+                "login": user_data["login"],
+                "exp": datetime.utcnow() + timedelta(days=1)
+            }
+            token = jwt.encode(token_data, JWT_SECRET, algorithm="HS256")
             
-            # Redirect with secure token handling
-            redirect_url = f"{settings.frontend_url}/auth/callback"
-            response = RedirectResponse(redirect_url)
+            # Serialize user data for cookie
+            user_data_json = json.dumps(user_data)
             
-            # Set secure HTTP-only cookies instead of URL params
+            # Get frontend URL from environment variables
+            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+            
+            # Create redirect response to frontend callback URL
+            response = RedirectResponse(url=f"{frontend_url}/auth/callback")
+            
+            # Set secure HTTP-only cookies
             response.set_cookie(
-                "auth_token",
-                access_token,
+                key="github_token",
+                value=token,
                 max_age=3600,  # 1 hour
                 httponly=True,
-                secure=True,
-                samesite="strict"
+                secure=os.environ.get("NODE_ENV") == "production",
+                samesite="lax"
             )
+            
+            # Set user data in a cookie that the frontend can read
             response.set_cookie(
-                "user_data",
-                user.model_dump_json(),
+                key="user_data",
+                value=user.model_dump_json(),
                 max_age=3600,
                 httponly=False,  # Frontend needs to read this
-                secure=True,
-                samesite="strict"
+                secure=os.environ.get("NODE_ENV") == "production",
+                samesite="lax"
             )
             
             # Clear state cookie
