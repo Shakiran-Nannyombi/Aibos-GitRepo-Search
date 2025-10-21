@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 // SVG Icon Components
 const GitBranchIcon = () => (
@@ -63,6 +64,8 @@ const PackageIcon = () => (
 );
 
 export function Hero() {
+  usePageTitle('Home');
+  
   const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);

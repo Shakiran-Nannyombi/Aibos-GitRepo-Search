@@ -1,0 +1,16 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#0d1117"/>
+  
+  <!-- Lens/Search icon -->
+  <circle cx="13" cy="13" r="6" stroke="#f0f6fc" stroke-width="2" fill="none"/>
+  <path d="m17 17 4 4" stroke="#f0f6fc" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- GitHub-style dots -->
+  <circle cx="24" cy="8" r="1.5" fill="#7c3aed"/>
+  <circle cx="8" cy="24" r="1.5" fill="#7c3aed"/>
+  <circle cx="26" cy="26" r="1" fill="#7c3aed" opacity="0.7"/>
+  
+  <!-- Accent line -->
+  <path d="M6 6 L10 10" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+</svg>
