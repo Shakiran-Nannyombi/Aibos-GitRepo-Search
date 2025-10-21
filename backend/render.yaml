@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: aibos-github-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: github_client_id
+        sync: false
+      - key: github_client_secret
+        sync: false
+      - key: secret_key
+        sync: false
+      - key: frontend_url
+        value: https://your-frontend-url.onrender.com
+        sync: false
