@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: aibos-github-frontend
+    runtime: static
+    plan: free
+    buildCommand: npm ci && npm run build
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://your-backend-url.onrender.com
+        sync: false

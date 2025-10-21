@@ -2,16 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth, api
 import uvicorn
+import os
 
 app = FastAPI(title="Lens+Github")
 
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173", 
+        "https://lensgithub.netlify.app", 
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Include routers
@@ -32,5 +37,9 @@ async def root():
     }
 
 
+# For Vercel deployment
+handler = app
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

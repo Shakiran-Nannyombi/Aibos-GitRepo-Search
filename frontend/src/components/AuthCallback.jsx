@@ -9,30 +9,28 @@ export function AuthCallback() {
 
     useEffect(() => {
         const handleCallback = async () => {
-            const params = new URLSearchParams(window.location.search);
-            const token = params.get('token');
-            const userParam = params.get('user');
-
-            if (token && userParam) {
-                try {
-                    const user = JSON.parse(decodeURIComponent(userParam));
-                    
-                    
-                    localStorage.setItem('github_token', token);
-                    localStorage.setItem('github_user', JSON.stringify(user));
+            try {
+                // Read user data from secure cookie instead of URL
+                const userCookie = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('user_data='));
+                
+                if (userCookie) {
+                    const userData = userCookie.split('=')[1];
+                    const user = JSON.parse(decodeURIComponent(userData));
                     
                     // Set user in context
                     setUser(user);
                     
-                    // Wait a bit for state to update, then redirect
+                    // Navigate to dashboard
                     setTimeout(() => {
                         navigate('/dashboard', { replace: true });
                     }, 500);
-                } catch (error) {
+                } else {
                     navigate('/?error=auth_failed', { replace: true });
                 }
-            } else {
-                navigate('/?error=missing_params', { replace: true });
+            } catch (error) {
+                navigate('/?error=auth_failed', { replace: true });
             }
         };
 

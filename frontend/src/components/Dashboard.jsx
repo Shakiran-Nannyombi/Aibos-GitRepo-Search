@@ -7,8 +7,11 @@ import { EmptyState } from './EmptyState';
 import { ErrorAlert } from './ErrorAlert';
 import { LoadingSpinner } from './LoadingSpinner';
 import { Pagination } from './Pagination';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function Dashboard() {
+    usePageTitle('Dashboard');
+    
     const [query, setQuery] = useState('');
     const [repositories, setRepositories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
