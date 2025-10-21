@@ -11,7 +11,13 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.get("/github")
 async def github_auth(settings: Settings = Depends(get_settings)):
     """Redirect to GitHub OAuth page"""
-    backend_callback_url = "http://localhost:8000/auth/callback"
+    # Use the current request URL to build the callback URL
+    import os
+    vercel_url = os.environ.get("VERCEL_URL")
+    if vercel_url:
+        backend_callback_url = f"https://{vercel_url}/auth/callback"
+    else:
+        backend_callback_url = "http://localhost:8000/auth/callback"
     
     params = {
         "client_id": settings.github_client_id,
