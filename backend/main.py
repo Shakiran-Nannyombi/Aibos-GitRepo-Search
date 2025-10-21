@@ -12,9 +12,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173", 
-        "https://your-frontend-domain.com",  # Replace with your actual frontend domain
-        "https://aibos-github-search.netlify.app",  # Example Netlify domain
-        "https://aibos-github-search.vercel.app"   # Example Vercel domain
+        "https://aibos-github-search.netlify.app",  # Your Netlify domain
+        "https://random-name-123456.netlify.app"   # Replace with your actual Netlify URL
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
