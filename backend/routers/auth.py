@@ -24,8 +24,13 @@ async def github_auth(request: Request, settings: Settings = Depends(get_setting
     # For now, we'll validate it in callback
     
     import os
+    # Check for production environment variables
+    render_url = os.environ.get("RENDER_EXTERNAL_URL")
     vercel_url = os.environ.get("VERCEL_URL")
-    if vercel_url:
+    
+    if render_url:
+        backend_callback_url = f"{render_url}/auth/callback"
+    elif vercel_url:
         backend_callback_url = f"https://{vercel_url}/auth/callback"
     else:
         backend_callback_url = "http://localhost:8000/auth/callback"
