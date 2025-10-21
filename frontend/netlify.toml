@@ -15,3 +15,6 @@
 
 [context.deploy-preview.environment]
   VITE_BACKEND_URL = "https://aibos-github-api.onrender.com"
+
+[context.branch-deploy.environment]
+  VITE_BACKEND_URL = "https://aibos-github-api.onrender.com"

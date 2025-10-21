@@ -13,5 +13,5 @@ services:
       - key: SECRET_KEY
         sync: false
       - key: FRONTEND_URL
-        value: https://aibos-github-search.netlify.app
+        value: https://lensgithub.netlify.app
         sync: false
