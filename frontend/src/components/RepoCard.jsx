@@ -61,24 +61,24 @@ export function RepoCard({ repo }) {
     };
 
     return (
-        <div className="group relative p-6 rounded-2xl border-2 hover:shadow-2xl hover:scale-[1.01]
-                      transition-all duration-300"
-             style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
+        <div className="group relative p-6 rounded-xl border border-border bg-card hover:shadow-md
+                      transition-all duration-200"
+        >
             {/* Save Button */}
             <button
                 onClick={handleSave}
-                className={`absolute top-4 right-4 p-2 rounded-full 
-                          border-2 transition-all duration-300 z-10
+                className={`absolute top-4 right-4 p-2 rounded-lg 
+                          border transition-all duration-200 z-10
                           ${isSaved 
-                            ? 'bg-green-500 border-green-500 text-white hover:bg-green-600' 
-                            : 'bg-white dark:bg-black border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                            ? 'bg-green-600 border-green-600 text-white hover:bg-green-700' 
+                            : 'bg-header border-border text-foreground hover:bg-border/50'
                           }`}
                 title={isSaved ? 'Remove from saved' : 'Save repository'}
             >
                 {isSaved ? (
-                    <Check className="w-5 h-5" strokeWidth={3} />
+                    <Check className="w-4 h-4" strokeWidth={3} />
                 ) : (
-                    <Plus className="w-5 h-5" strokeWidth={3} />
+                    <Plus className="w-4 h-4" strokeWidth={3} />
                 )}
             </button>
 
@@ -90,49 +90,44 @@ export function RepoCard({ repo }) {
                             href={repo.html_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xl font-bold text-gray-900 dark:text-gray-100 
-                                     hover:text-black dark:hover:text-white
-                                     group-hover:underline truncate transition-colors"
+                            className="text-xl font-semibold text-accent 
+                                     hover:underline truncate transition-colors"
                         >
                             {repo.full_name}
                         </a>
-                        <ExternalLink className="w-4 h-4 flex-shrink-0 text-gray-500 dark:text-gray-400 
-                                               group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" />
+                        <ExternalLink className="w-4 h-4 flex-shrink-0 text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
 
                     {/* Description */}
                     {repo.description && (
-                        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 
-                                    group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
+                        <p className="text-muted mb-4 line-clamp-2 text-sm leading-relaxed">
                             {repo.description}
                         </p>
                     )}
 
                     {/* Stats and Language */}
-                    <div className="flex items-center gap-6 flex-wrap text-sm">
+                    <div className="flex items-center gap-6 flex-wrap text-xs text-muted">
                         {repo.language && (
-                            <div className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-300">
+                            <div className="flex items-center gap-1.5 font-medium">
                                 <span
-                                    className="w-3 h-3 rounded-full ring-2 ring-white dark:ring-black"
+                                    className="w-3 h-3 rounded-full border border-border/50"
                                     style={{ backgroundColor: languageColors[repo.language] || '#858585' }}
                                 />
                                 <span>{repo.language}</span>
                             </div>
                         )}
                         
-                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 
-                                      group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
-                            <Star className="w-4 h-4 fill-current" />
-                            <span className="font-semibold">{repo.stargazers_count.toLocaleString()}</span>
+                        <div className="flex items-center gap-1.5 hover:text-accent transition-colors">
+                            <Star className="w-4 h-4" />
+                            <span className="font-medium">{repo.stargazers_count.toLocaleString()}</span>
                         </div>
                         
-                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400
-                                      group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
+                        <div className="flex items-center gap-1.5 hover:text-accent transition-colors">
                             <GitFork className="w-4 h-4" />
-                            <span className="font-semibold">{repo.forks_count.toLocaleString()}</span>
+                            <span className="font-medium">{repo.forks_count.toLocaleString()}</span>
                         </div>
                         
-                        <span className="text-gray-500 dark:text-gray-500 text-xs">
+                        <span className="opacity-70">
                             Updated {formatDate(repo.updated_at)}
                         </span>
                     </div>
@@ -143,14 +138,13 @@ export function RepoCard({ repo }) {
                     href={`https://github.com/${repo.owner.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 group/avatar"
+                    className="flex-shrink-0"
                 >
                     <img
                         src={repo.owner.avatar_url}
                         alt={repo.owner.login}
-                        className="w-16 h-16 rounded-full border-2 border-gray-200 dark:border-gray-800
-                                 group-hover/avatar:border-gray-800 dark:group-hover/avatar:border-gray-200
-                                 group-hover/avatar:scale-110 transition-all duration-300 shadow-lg"
+                        className="w-12 h-12 rounded-lg border border-border shadow-sm
+                                 hover:border-accent transition-all duration-200"
                     />
                 </a>
             </div>

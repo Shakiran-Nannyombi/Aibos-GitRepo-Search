@@ -6,17 +6,17 @@ export function EmptyState({ type, message }) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="relative">
-                    <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full"></div>
-                    <Search className="relative w-20 h-20 text-gray-800 dark:text-gray-200 mb-6 animate-pulse" />
+                    <div className="absolute inset-0 blur-3xl opacity-10 bg-accent rounded-full"></div>
+                    <Search className="relative w-16 h-16 text-muted mb-6 animate-pulse" />
                 </div>
-                <h3 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+                <h3 className="text-2xl font-bold mb-3 text-foreground">
                     Start Your Search
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 max-w-lg text-lg leading-relaxed">
+                <p className="text-muted max-w-lg leading-relaxed">
                     Enter keywords above to discover amazing GitHub repositories. Try searching for 
-                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "react"</span>, 
-                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "machine learning"</span>, or 
-                    <span className="font-semibold text-gray-800 dark:text-gray-200"> "web development"</span>.
+                    <span className="font-semibold text-foreground"> "react"</span>, 
+                    <span className="font-semibold text-foreground"> "machine learning"</span>, or 
+                    <span className="font-semibold text-foreground"> "web development"</span>.
                 </p>
             </div>
         );
@@ -25,13 +25,13 @@ export function EmptyState({ type, message }) {
     return (
         <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="relative">
-                <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
-                <Inbox className="relative w-20 h-20 text-gray-800 dark:text-gray-200 mb-6" />
+                <div className="absolute inset-0 blur-3xl opacity-10 bg-muted rounded-full"></div>
+                <Inbox className="relative w-16 h-16 text-muted mb-6" />
             </div>
-            <h3 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+            <h3 className="text-2xl font-bold mb-3 text-foreground">
                 No Repositories Found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 max-w-lg text-lg">
+            <p className="text-muted max-w-lg">
                 {message || "We couldn't find any repositories matching your search. Try different keywords or adjust your filters."}
             </p>
         </div>

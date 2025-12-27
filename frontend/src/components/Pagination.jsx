@@ -20,7 +20,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading })
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1 || isLoading}
-                className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed p-2"
+                className="p-2 rounded-lg border border-border bg-header text-foreground hover:bg-border/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
                 <ChevronLeft className="w-5 h-5" />
             </button>
@@ -29,11 +29,11 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading })
                 <>
                     <button
                         onClick={() => onPageChange(1)}
-                        className="btn-secondary px-4 py-2"
+                        className="px-4 py-2 rounded-lg border border-border bg-header text-foreground hover:bg-border/50 transition-all font-medium"
                     >
                         1
                     </button>
-                    {startPage > 2 && <span className="px-2">...</span>}
+                    {startPage > 2 && <span className="px-2 text-muted">...</span>}
                 </>
             )}
 
@@ -42,11 +42,11 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading })
                     key={page}
                     onClick={() => onPageChange(page)}
                     disabled={isLoading}
-                    className={`px-4 py-2 rounded-md transition-colors ${
+                    className={`px-4 py-2 rounded-lg border transition-all font-medium ${
                         page === currentPage
-                            ? 'bg-light-accent dark:bg-dark-accent text-white'
-                            : 'btn-secondary'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            ? 'bg-accent text-white border-accent'
+                            : 'border-border bg-header text-foreground hover:bg-border/50'
+                    } disabled:opacity-30 disabled:cursor-not-allowed`}
                 >
                     {page}
                 </button>
@@ -54,10 +54,10 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading })
 
             {endPage < totalPages && (
                 <>
-                    {endPage < totalPages - 1 && <span className="px-2">...</span>}
+                    {endPage < totalPages - 1 && <span className="px-2 text-muted">...</span>}
                     <button
                         onClick={() => onPageChange(totalPages)}
-                        className="btn-secondary px-4 py-2"
+                        className="px-4 py-2 rounded-lg border border-border bg-header text-foreground hover:bg-border/50 transition-all font-medium"
                     >
                         {totalPages}
                     </button>
@@ -67,7 +67,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading })
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages || isLoading}
-                className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed p-2"
+                className="p-2 rounded-lg border border-border bg-header text-foreground hover:bg-border/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
                 <ChevronRight className="w-5 h-5" />
             </button>

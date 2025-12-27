@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Star, GitFork, Users, Code, TrendingUp, Share2, UserPlus, Award, Activity, GitCommit, Calendar } from 'lucide-react';
+import { Star, GitFork, Users, Code, TrendingUp, Share2, UserPlus, Award, Activity, GitCommit, Calendar, ExternalLink } from 'lucide-react';
 import { AnalyticsSidebar } from './AnalyticsSidebar';
 
 export function Analytics() {
@@ -9,13 +9,7 @@ export function Analytics() {
     const [loading, setLoading] = useState(true);
     const [showSidebar, setShowSidebar] = useState(false);
 
-    useEffect(() => {
-        if (user) {
-            fetchUserStats();
-        }
-    }, [user]);
-
-    const fetchUserStats = async () => {
+    const fetchUserStats = useCallback(async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('github_token');
@@ -79,11 +73,18 @@ export function Analytics() {
                 recentActivity: Object.entries(activityMap).length,
                 activityMap
             });
-        } catch (error) {
+        } catch (err) {
+            console.error('Error fetching stats:', err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.login]);
+
+    useEffect(() => {
+        if (user) {
+            fetchUserStats();
+        }
+    }, [user, fetchUserStats]);
 
     const languageColors = {
         JavaScript: '#f1e05a',
@@ -100,45 +101,43 @@ export function Analytics() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-screen bg-background">
                 <div className="text-center">
-                    <Activity className="w-12 h-12 animate-spin mx-auto mb-4 text-gray-500 dark:text-gray-400" />
-                    <p className="text-gray-600 dark:text-gray-400">Loading your analytics...</p>
+                    <Activity className="w-12 h-12 animate-spin mx-auto mb-4 text-accent" />
+                    <p className="text-muted">Analyzing your open source journey...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-6xl mx-auto px-4 py-8">
             {/* Header with Profile */}
-            <div className="relative p-8 rounded-3xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                          bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-gray-900/20 dark:to-gray-800/20 
-                          backdrop-blur-md overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gray-500/10 dark:bg-gray-400/10 rounded-full blur-3xl"></div>
+            <div className="relative p-8 rounded-2xl border border-border bg-header shadow-sm overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl"></div>
                 
                 <div className="relative flex flex-col md:flex-row items-center gap-6">
                     <img
                         src={user.avatar_url}
                         alt={user.login}
-                        className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900 shadow-xl"
+                        className="w-24 h-24 rounded-full border-2 border-border shadow-sm"
                     />
                     
                     <div className="flex-1 text-center md:text-left">
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                        <h1 className="text-3xl font-bold text-foreground mb-1">
                             {user.name || user.login}
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
-                            @{user.login} • GitHub Analytics
+                        <p className="text-muted text-lg mb-4">
+                            @{user.login} • Developer Analytics
                         </p>
                         
                         <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                             <button
                                 onClick={() => setShowSidebar(true)}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl
-                                         bg-blue-600 text-white font-semibold
-                                         hover:bg-blue-700
-                                         transition-all shadow-lg"
+                                className="flex items-center gap-2 px-5 py-2 rounded-lg
+                                         bg-accent text-white font-semibold
+                                         hover:bg-accent-hover
+                                         transition-all shadow-sm"
                             >
                                 <Share2 className="w-4 h-4" />
                                 Share & Invite
@@ -149,172 +148,145 @@ export function Analytics() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { icon: Code, label: 'Total Repositories', value: stats?.totalRepos || 0, color: 'blue', gradient: 'from-blue-500 to-blue-600' },
-                    { icon: Star, label: 'Total Stars', value: stats?.totalStars || 0, color: 'yellow', gradient: 'from-yellow-500 to-orange-500' },
-                    { icon: GitFork, label: 'Total Forks', value: stats?.totalForks || 0, color: 'green', gradient: 'from-green-500 to-emerald-600' },
-                    { icon: GitCommit, label: 'Recent Commits', value: stats?.totalCommits || 0, color: 'gray', gradient: 'from-gray-500 to-gray-600' }
+                    { icon: Code, label: 'Repos', value: stats?.totalRepos || 0, color: 'text-blue-500' },
+                    { icon: Star, label: 'Stars', value: stats?.totalStars || 0, color: 'text-yellow-500' },
+                    { icon: GitFork, label: 'Forks', value: stats?.totalForks || 0, color: 'text-green-500' },
+                    { icon: GitCommit, label: 'Commits', value: stats?.totalCommits || 0, color: 'text-muted' }
                 ].map((stat, i) => (
-                    <div key={i} className="group relative p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md
-                                          hover:border-gray-400 dark:hover:border-gray-500
-                                          hover:scale-105 transition-all duration-300 overflow-hidden">
-                        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-10 rounded-full blur-2xl`}></div>
-                        <stat.icon className={`relative w-10 h-10 mb-3 text-${stat.color}-500`} strokeWidth={2} />
-                        <p className="relative text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                    <div key={i} className="group p-6 rounded-xl border border-border bg-header shadow-sm transition-all hover:border-muted">
+                        <stat.icon className={`w-8 h-8 mb-3 ${stat.color}`} />
+                        <p className="text-3xl font-bold text-foreground mb-1">
                             {stat.value.toLocaleString()}
                         </p>
-                        <p className="relative text-sm text-gray-600 dark:text-gray-400 font-medium">
+                        <p className="text-sm text-muted font-medium">
                             {stat.label}
                         </p>
                     </div>
                 ))}
             </div>
 
-            {/* Language Breakdown */}
-            <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
-                <div className="flex items-center gap-2 mb-6">
-                    <TrendingUp className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        Top Languages
-                    </h2>
-                </div>
+            {/* Content Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Language Breakdown */}
+                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
+                    <div className="flex items-center gap-2 mb-6">
+                        <TrendingUp className="w-5 h-5 text-muted" />
+                        <h2 className="text-xl font-bold text-foreground">
+                            Top Languages
+                        </h2>
+                    </div>
 
-                <div className="space-y-4">
-                    {stats?.topLanguages?.map(([lang, count], i) => {
-                        const percentage = (count / stats.totalRepos) * 100;
-                        return (
-                            <div key={lang}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <div 
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: languageColors[lang] || '#858585' }}
-                                        />
-                                        <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                            {lang}
+                    <div className="space-y-4">
+                        {stats?.topLanguages?.map(([lang, count]) => {
+                            const percentage = (count / stats.totalRepos) * 100;
+                            return (
+                                <div key={lang}>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div 
+                                                className="w-3 h-3 rounded-full"
+                                                style={{ backgroundColor: languageColors[lang] || 'var(--muted)' }}
+                                            />
+                                            <span className="font-semibold text-foreground">
+                                                {lang}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-muted">
+                                            {count} repos ({percentage.toFixed(1)}%)
                                         </span>
                                     </div>
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        {count} repos ({percentage.toFixed(1)}%)
-                                    </span>
+                                    <div className="w-full h-2 bg-border rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full rounded-full transition-all duration-1000"
+                                            style={{ 
+                                                width: `${percentage}%`,
+                                                backgroundColor: languageColors[lang] || 'var(--muted)'
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                                    <div 
-                                        className="h-full rounded-full transition-all duration-1000"
-                                        style={{ 
-                                            width: `${percentage}%`,
-                                            backgroundColor: languageColors[lang] || '#858585'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Top Repositories */}
-            <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                          bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
-                <div className="flex items-center gap-2 mb-6">
-                    <Award className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        Top Repositories
-                    </h2>
+                            );
+                        })}
+                    </div>
                 </div>
 
-                <div className="grid gap-4">
-                    {stats?.topRepos?.map((repo, i) => (
-                        <a
-                            key={repo.id}
-                            href={repo.html_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-between p-4 rounded-xl
-                                     bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800
-                                     hover:border-gray-400 dark:hover:border-gray-500
-                                     transition-all group"
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-2xl font-bold text-gray-400 dark:text-gray-600">
-                                        #{i + 1}
-                                    </span>
-                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400">
+                {/* Top Repositories */}
+                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Award className="w-5 h-5 text-muted" />
+                        <h2 className="text-xl font-bold text-foreground">
+                            Notable Projects
+                        </h2>
+                    </div>
+
+                    <div className="space-y-3">
+                        {stats?.topRepos?.map((repo) => (
+                            <a
+                                key={repo.id}
+                                href={repo.html_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-muted bg-background transition-all group"
+                            >
+                                <div className="min-w-0 pr-4">
+                                    <h3 className="font-bold text-foreground text-sm group-hover:text-accent truncate">
                                         {repo.name}
                                     </h3>
+                                    <div className="flex items-center gap-3 mt-1 text-xs text-muted">
+                                        <div className="flex items-center gap-1">
+                                            <Star className="w-3 h-3 fill-current" />
+                                            {repo.stargazers_count}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <GitFork className="w-3 h-3" />
+                                            {repo.forks_count}
+                                        </div>
+                                    </div>
                                 </div>
-                                {repo.description && (
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-                                        {repo.description}
-                                    </p>
-                                )}
-                            </div>
-                            
-                            <div className="flex items-center gap-4 ml-4">
-                                <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <span className="font-semibold">{repo.stargazers_count}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                    <GitFork className="w-4 h-4" />
-                                    <span className="font-semibold">{repo.forks_count}</span>
-                                </div>
-                            </div>
-                        </a>
-                    ))}
+                                <ExternalLink className="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* Activity Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                {/* Recent Activity Count */}
-                <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                              bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
+            {/* Secondary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
-                        <Calendar className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            Activity (Last 30 Days)
+                        <Calendar className="w-5 h-5 text-muted" />
+                        <h2 className="text-lg font-bold text-foreground">
+                            Activity Overview
                         </h2>
                     </div>
-                    <p className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                        {stats?.recentActivity || 0}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Active days this month
-                    </p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold text-foreground">{stats?.recentActivity || 0}</span>
+                        <span className="text-muted text-sm font-medium">Active days (Last 30D)</span>
+                    </div>
                 </div>
 
-                {/* Repo Breakdown */}
-                <div className="p-6 rounded-2xl border-2 border-gray-200/30 dark:border-gray-700/30 
-                              bg-gray-50/20 dark:bg-gray-900/15 backdrop-blur-md">
+                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
-                        <Activity className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            Repository Breakdown
+                        <Activity className="w-5 h-5 text-muted" />
+                        <h2 className="text-lg font-bold text-foreground">
+                            Repository Types
                         </h2>
                     </div>
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Public Repos</span>
-                            <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                                {stats?.publicRepos || 0}
-                            </span>
+                    <div className="flex gap-8">
+                        <div>
+                            <p className="text-xs text-muted font-medium uppercase tracking-wider mb-1">Public</p>
+                            <p className="text-2xl font-bold text-foreground">{stats?.publicRepos || 0}</p>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Private Repos</span>
-                            <span className="text-xl font-bold text-gray-600 dark:text-gray-400">
-                                {stats?.privateRepos || 0}
-                            </span>
+                        <div>
+                            <p className="text-xs text-muted font-medium uppercase tracking-wider mb-1">Private</p>
+                            <p className="text-2xl font-bold text-foreground">{stats?.privateRepos || 0}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Sidebar */}
             <AnalyticsSidebar 
                 isOpen={showSidebar} 
                 onClose={() => setShowSidebar(false)}

@@ -12,24 +12,24 @@ export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confi
             />
             
             {/* Modal */}
-            <div className="relative bg-white dark:bg-black border-2 border-red-200 dark:border-red-800 
-                          rounded-3xl shadow-2xl max-w-md w-full mx-4 p-6 
+            <div className="relative bg-background border border-border 
+                          rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 
                           animate-in fade-in zoom-in duration-200">
                 {/* Icon */}
-                <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/50 
+                <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-red-500/10 
                                   flex items-center justify-center">
-                        <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" strokeWidth={2.5} />
+                        <AlertTriangle className="w-8 h-8 text-red-500" strokeWidth={2} />
                     </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl font-bold text-center mb-3 text-gray-900 dark:text-gray-100">
+                <h3 className="text-xl font-bold text-center mb-2 text-foreground">
                     {title}
                 </h3>
 
                 {/* Message */}
-                <p className="text-center text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                <p className="text-center text-muted mb-8 leading-relaxed text-sm">
                     {message}
                 </p>
 
@@ -37,11 +37,9 @@ export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confi
                 <div className="flex gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 px-6 py-3 rounded-xl font-semibold
-                                 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100
-                                 border-2 border-gray-200 dark:border-gray-800
-                                 hover:bg-gray-200 dark:hover:bg-gray-800
-                                 transition-all duration-200"
+                        className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm
+                                 bg-header text-foreground border border-border
+                                 hover:bg-border/30 transition-all duration-200"
                     >
                         {cancelText}
                     </button>
@@ -50,10 +48,9 @@ export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confi
                             onConfirm();
                             onClose();
                         }}
-                        className="flex-1 px-6 py-3 rounded-xl font-semibold
-                                 bg-red-600 dark:bg-red-600 text-white
-                                 hover:bg-red-700 dark:hover:bg-red-700
-                                 transition-all duration-200 shadow-lg"
+                        className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm
+                                 bg-red-500 text-white hover:bg-red-600
+                                 transition-all duration-200 shadow-sm"
                     >
                         {confirmText}
                     </button>

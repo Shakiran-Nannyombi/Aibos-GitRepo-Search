@@ -29,7 +29,7 @@ export function AuthCallback() {
                 } else {
                     navigate('/?error=auth_failed', { replace: true });
                 }
-            } catch (error) {
+            } catch {
                 navigate('/?error=auth_failed', { replace: true });
             }
         };

@@ -63,6 +63,14 @@ const PackageIcon = () => (
   </svg>
 );
 
+const phrases = [
+  'Search GitHub Repositories',
+  'Discover Amazing Projects',
+  'Explore Open Source',
+  'Find Your Next Contribution',
+  'Connect with Developers'
+];
+
 export function Hero() {
   usePageTitle('Home');
   
@@ -72,14 +80,6 @@ export function Hero() {
   const [typingSpeed, setTypingSpeed] = useState(150);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
-
-  const phrases = [
-    'Search GitHub Repositories',
-    'Discover Amazing Projects',
-    'Explore Open Source',
-    'Find Your Next Contribution',
-    'Connect with Developers'
-  ];
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -119,7 +119,7 @@ export function Hero() {
 
     const timer = setTimeout(handleTyping, typingSpeed);
     return () => clearTimeout(timer);
-  }, [text, isDeleting, loopNum, phrases, typingSpeed]);
+  }, [text, isDeleting, loopNum, typingSpeed]);
 
   // Generate GitHub-themed floating elements in a grid pattern
   const iconComponents = [StarIcon, GitBranchIcon, CodeIcon, GitCommitIcon, SearchIcon, FolderIcon, GitPullRequestIcon, PackageIcon];
@@ -144,16 +144,17 @@ export function Hero() {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8 bg-background"
     >
       {/* Animated background grid */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0" style={{
           backgroundImage: `
             linear-gradient(to right, currentColor 1px, transparent 1px),
             linear-gradient(to bottom, currentColor 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px'
+          backgroundSize: '80px 80px',
+          color: 'var(--foreground)'
         }} />
       </div>
 
@@ -165,21 +166,21 @@ export function Hero() {
         const maxDistance = 300;
         const influence = Math.max(0, 1 - distance / maxDistance);
         
-        const offsetX = distanceX * influence * 0.3;
-        const offsetY = distanceY * influence * 0.3;
+        const offsetX = distanceX * influence * 0.2;
+        const offsetY = distanceY * influence * 0.2;
         const IconComponent = element.Icon;
 
         return (
           <div
             key={element.id}
-            className="absolute pointer-events-none transition-all duration-300 ease-out opacity-20 text-gray-600 dark:text-gray-400"
+            className="absolute pointer-events-none transition-all duration-300 ease-out opacity-10 text-muted"
             style={{
               left: `${element.initialX}%`,
               top: `${element.initialY}%`,
               width: `${element.size}px`,
               height: `${element.size}px`,
-              transform: `translate(${offsetX}px, ${offsetY}px) rotate(${element.rotation + influence * 30}deg)`,
-              filter: `blur(${Math.max(0, 1 - influence * 1)}px)`,
+              transform: `translate(${offsetX}px, ${offsetY}px) rotate(${element.rotation + influence * 20}deg)`,
+              filter: `blur(${Math.max(0, 2 - influence * 2)}px)`,
             }}
           >
             <IconComponent />
@@ -187,11 +188,11 @@ export function Hero() {
         );
       })}
 
-      {/* Mouse follower glow */}
+      {/* Mouse follower glow - very subtle */}
       <div
-        className="absolute pointer-events-none w-96 h-96 rounded-full opacity-20 blur-3xl transition-all duration-500"
+        className="absolute pointer-events-none w-96 h-96 rounded-full opacity-5 blur-3xl transition-all duration-500"
         style={{
-          background: 'radial-gradient(circle, rgba(100, 100, 255, 0.4) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)',
           left: mousePosition.x - 192,
           top: mousePosition.y - 192,
         }}
@@ -200,57 +201,56 @@ export function Hero() {
       {/* Main content */}
       <div className="relative z-10 text-center px-4 max-w-5xl -mt-20">
         {/* Main heading with typing effect */}
-        <h1 className="text-6xl md:text-8xl font-bold mb-6" style={{color: '#f4e6e9'}}>
+        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-foreground tracking-tight">
           <span className="inline-block">Lens+Github</span>
         </h1>
         
         {/* Typing animation */}
         <div className="h-24 md:h-32 flex items-center justify-center">
-          <h2 className="text-3xl md:text-5xl font-semibold" style={{color: '#dd8c9e'}}>
+          <h2 className="text-3xl md:text-5xl font-semibold text-accent">
             {text}
             <span className="animate-pulse">|</span>
           </h2>
         </div>
 
         {/* Feature highlights */}
-        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto" style={{color: '#c4b7ba'}}>
+        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-muted">
           Your gateway to exploring millions of GitHub repositories. 
           Search, discover, and connect with the world's largest developer community.
         </p>
 
         {/* Call to action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button className="group relative px-8 py-4 font-bold text-lg rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl" style={{backgroundColor: '#dd8c9e', color: '#0b0405'}}>
-            <span className="relative z-10">Start Exploring</span>
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{background: 'linear-gradient(to right, #8e233b, #d94062)'}} />
+          <button className="group relative px-10 py-4 font-bold text-lg rounded-xl transition-all duration-200 bg-accent text-white hover:bg-accent-hover hover:shadow-lg active:scale-95">
+            <span className="relative z-10 font-bold">Start Exploring</span>
           </button>
           
-          <button className="px-8 py-4 border-2 font-bold text-lg rounded-full transition-all duration-300" style={{borderColor: '#dd8c9e', color: '#dd8c9e'}}>
+          <button className="px-10 py-4 border border-border font-semibold text-lg rounded-xl transition-all duration-200 hover:bg-header hover:border-muted text-foreground active:scale-95">
             Learn More
           </button>
         </div>
 
         {/* Stats */}
-        <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+        <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto border-t border-border/50 pt-12">
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>100M+</div>
-            <div className="text-sm" style={{color: '#9a8a8d'}}>Repositories</div>
+            <div className="text-4xl font-bold mb-2 text-foreground">100M+</div>
+            <div className="text-sm text-muted font-medium">Repositories</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>90M+</div>
-            <div className="text-sm" style={{color: '#9a8a8d'}}>Developers</div>
+            <div className="text-4xl font-bold mb-2 text-foreground">90M+</div>
+            <div className="text-sm text-muted font-medium">Developers</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2" style={{color: '#f4e6e9'}}>∞</div>
-            <div className="text-sm" style={{color: '#9a8a8d'}}>Possibilities</div>
+            <div className="text-4xl font-bold mb-2 text-foreground">∞</div>
+            <div className="text-sm text-muted font-medium">Possibilities</div>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50">
         <svg
-          className="w-6 h-6 text-gray-600 dark:text-gray-400"
+          className="w-6 h-6 text-muted"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"

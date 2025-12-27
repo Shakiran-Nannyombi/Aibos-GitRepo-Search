@@ -125,9 +125,9 @@ export function Dashboard() {
     };
 
     return (
-        <div ref={containerRef} className="flex-grow relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
+        <div ref={containerRef} className="flex-grow relative overflow-hidden bg-background text-foreground">
             {/* Animated background grid */}
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <div className="absolute inset-0 opacity-5 pointer-events-none">
                 <div className="absolute inset-0" style={{
                     backgroundImage: `
                         linear-gradient(to right, currentColor 1px, transparent 1px),
@@ -138,18 +138,18 @@ export function Dashboard() {
                 }} />
             </div>
 
-            {/* Mouse glow effect */}
+            {/* Mouse glow effect - more subtle for GitHub theme */}
             <div
-                className="absolute pointer-events-none w-96 h-96 rounded-full opacity-20 blur-3xl transition-all duration-500"
+                className="absolute pointer-events-none w-96 h-96 rounded-full opacity-10 blur-3xl transition-all duration-500"
                 style={{
-                    background: 'radial-gradient(circle, rgba(221, 140, 158, 0.2) 0%, rgba(142, 35, 59, 0.1) 50%, transparent 70%)',
+                    background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)',
                     left: mousePosition.x - 192,
                     top: mousePosition.y - 192,
                 }}
             />
 
             <div className="relative z-10">
-                <Navbar noBorder={true} isHidden={isFilterOpen} />
+                <Navbar isHidden={isFilterOpen} />
 
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32">
                 {/* Search Section */}
@@ -172,13 +172,13 @@ export function Dashboard() {
                     {/* Results Info and Quick Sort */}
                     {hasSearched && !isLoading && repositories.length > 0 && (
                         <div className="flex flex-wrap items-center gap-4">
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-md border-2" style={{backgroundColor: '#1a0f11', borderColor: '#3d2a2f'}}>
-                                <span className="text-sm font-semibold" style={{color: '#f4e6e9'}}>
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-md border border-border bg-header shadow-sm">
+                                <span className="text-sm font-semibold text-foreground">
                                     {totalCount.toLocaleString()}
                                 </span>
-                                <span className="text-sm" style={{color: '#c4b7ba'}}>
+                                <span className="text-sm text-muted">
                                     repositories found
-                                    {query && <span className="font-medium" style={{color: '#f4e6e9'}}> for "{query}"</span>}
+                                    {query && <span className="font-medium text-foreground"> for "{query}"</span>}
                                 </span>
                             </div>
 
@@ -186,7 +186,7 @@ export function Dashboard() {
                             <select
                                 value={quickSort}
                                 onChange={(e) => handleQuickSort(e.target.value)}
-                                className="px-4 py-2 rounded-xl font-medium text-sm focus:outline-none transition-all cursor-pointer" style={{backgroundColor: '#1a0f11', borderWidth: '2px', borderColor: '#3d2a2f', color: '#f4e6e9'}}
+                                className="px-4 py-2 rounded-xl font-medium text-sm focus:outline-none transition-all cursor-pointer bg-header border border-border text-foreground hover:bg-border/50"
                             >
                                 <option value="stars-desc">Stars (High to Low)</option>
                                 <option value="stars-asc">Stars (Low to High)</option>

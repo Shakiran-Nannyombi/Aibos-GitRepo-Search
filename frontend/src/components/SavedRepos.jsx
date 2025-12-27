@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Bookmark, Trash2, Filter as FilterIcon } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import { SavedRepoCard } from './SavedRepoCard';
@@ -10,6 +10,11 @@ export function SavedRepos() {
     const [selectedLanguage, setSelectedLanguage] = useState('all');
     const [sortBy, setSortBy] = useState('recent');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    const loadSavedRepos = useCallback(() => {
+        const repos = JSON.parse(localStorage.getItem('saved_repos') || '[]');
+        setSavedRepos(repos);
+    }, []);
 
     useEffect(() => {
         loadSavedRepos();
@@ -27,18 +32,9 @@ export function SavedRepos() {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('repoSaved', handleStorageChange);
         };
-    }, []);
+    }, [loadSavedRepos]);
 
-    useEffect(() => {
-        applyFilters();
-    }, [savedRepos, selectedLanguage, sortBy]);
-
-    const loadSavedRepos = () => {
-        const repos = JSON.parse(localStorage.getItem('saved_repos') || '[]');
-        setSavedRepos(repos);
-    };
-
-    const applyFilters = () => {
+    const applyFilters = useCallback(() => {
         let filtered = [...savedRepos];
 
         // Filter by language
@@ -64,7 +60,11 @@ export function SavedRepos() {
         }
 
         setFilteredRepos(filtered);
-    };
+    }, [savedRepos, selectedLanguage, sortBy]);
+
+    useEffect(() => {
+        applyFilters();
+    }, [applyFilters]);
 
     // Get unique languages from saved repos
     const languages = Array.from(new Set(savedRepos.map(repo => repo.language).filter(Boolean))).sort();
@@ -83,11 +83,11 @@ export function SavedRepos() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <Bookmark className="w-6 h-6 text-gray-900 dark:text-gray-100" />
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    <Bookmark className="w-6 h-6 text-foreground" />
+                    <h2 className="text-2xl font-bold text-foreground">
                         Saved Repositories
                     </h2>
-                    <span className="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-semibold">
+                    <span className="px-3 py-1 rounded-full bg-header border border-border text-foreground text-sm font-semibold">
                         {filteredRepos.length}
                     </span>
                 </div>
@@ -95,16 +95,9 @@ export function SavedRepos() {
                 {savedRepos.length > 0 && (
                     <button
                         onClick={clearAll}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all font-semibold"
-                        style={{backgroundColor: '#dc2626', color: 'white', borderColor: '#dc2626'}}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#b91c1c';
-                            e.target.style.borderColor = '#b91c1c';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#dc2626';
-                            e.target.style.borderColor = '#dc2626';
-                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg
+                                 bg-red-600 text-white font-semibold
+                                 hover:bg-red-700 transition-all shadow-sm"
                     >
                         <Trash2 className="w-4 h-4" />
                         Clear All
@@ -114,19 +107,18 @@ export function SavedRepos() {
 
             {/* Filters */}
             {savedRepos.length > 0 && (
-                <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl 
-                              bg-gray-50/30 dark:bg-gray-900/20 backdrop-blur-md 
-                              border-2 border-gray-200/30 dark:border-gray-700/30">
-                    <FilterIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <div className="flex flex-wrap items-center gap-3 p-4 rounded-xl 
+                              bg-header border border-border shadow-sm">
+                    <FilterIcon className="w-5 h-5 text-muted" />
                     
                     {/* Language Filter */}
                     <select
                         value={selectedLanguage}
                         onChange={(e) => setSelectedLanguage(e.target.value)}
-                        className="px-4 py-2 rounded-xl bg-white dark:bg-black 
-                                 border-2 border-gray-200 dark:border-gray-800
-                                 text-gray-900 dark:text-gray-100 font-medium text-sm
-                                 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500
+                        className="px-4 py-2 rounded-lg bg-background 
+                                 border border-border
+                                 text-foreground font-medium text-sm
+                                 focus:outline-none focus:border-muted
                                  transition-all cursor-pointer"
                     >
                         <option value="all">All Languages ({savedRepos.length})</option>
@@ -140,10 +132,10 @@ export function SavedRepos() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="px-4 py-2 rounded-xl bg-white dark:bg-black 
-                                 border-2 border-gray-200 dark:border-gray-800
-                                 text-gray-900 dark:text-gray-100 font-medium text-sm
-                                 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500
+                        className="px-4 py-2 rounded-lg bg-background 
+                                 border border-border
+                                 text-foreground font-medium text-sm
+                                 focus:outline-none focus:border-muted
                                  transition-all cursor-pointer"
                     >
                         <option value="recent">Recently Updated</option>

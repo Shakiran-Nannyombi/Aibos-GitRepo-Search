@@ -35,20 +35,15 @@ export function SavedRepoCard({ repo, onRemove }) {
 
     return (
         <div
-            className="group relative p-4 rounded-2xl border-2 hover:shadow-2xl hover:scale-[1.02]
-                      transition-all duration-300 flex flex-col min-h-[280px]"
-            style={{backgroundColor: '#2d1a1f', borderColor: '#4d3a3f'}}
+            className="group relative p-4 rounded-xl border transition-all duration-200 flex flex-col min-h-[250px] bg-card border-border hover:shadow-md hover:border-muted"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Remove Button */}
             <button
                 onClick={handleRemove}
-                className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-300
-                          ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
-                style={{backgroundColor: '#dc2626', color: 'white'}}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+                className={`absolute top-2 right-2 p-1.5 rounded-lg transition-all duration-200 shadow-sm
+                          ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'} bg-red-500 text-white hover:bg-red-600`}
                 title="Remove from saved"
             >
                 <Trash2 className="w-4 h-4" strokeWidth={2.5} />
@@ -56,14 +51,14 @@ export function SavedRepoCard({ repo, onRemove }) {
 
             {/* Repo Info */}
             <div className="flex flex-col h-full">
-                {/* Owner Avatar */}
-                <div className="flex items-center gap-2 mb-2">
+                {/* Owner Info */}
+                <div className="flex items-center gap-2 mb-3">
                     <img
                         src={repo.owner.avatar_url}
                         alt={repo.owner.login}
-                        className="w-7 h-7 rounded-full border-2 border-gray-200 dark:border-gray-800"
+                        className="w-6 h-6 rounded-full border border-border shadow-sm"
                     />
-                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium truncate">
+                    <span className="text-xs text-muted font-medium truncate">
                         {repo.owner.login}
                     </span>
                 </div>
@@ -73,32 +68,29 @@ export function SavedRepoCard({ repo, onRemove }) {
                     href={repo.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-gray-900 dark:text-gray-100 
-                             hover:text-gray-600 dark:hover:text-gray-400
-                             transition-colors mb-2 line-clamp-1 text-base leading-tight"
+                    className="font-bold text-foreground hover:text-accent transition-colors mb-2 line-clamp-1 text-base leading-tight"
                 >
                     {repo.name}
                 </a>
 
                 {/* Description */}
                 {repo.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 
-                                line-clamp-3 mb-auto">
+                    <p className="text-xs text-muted line-clamp-3 mb-auto leading-relaxed">
                         {repo.description}
                     </p>
                 )}
 
                 {/* Stats and Language */}
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
-                            <div className="flex items-center gap-1">
-                                <Star className="w-3.5 h-3.5 fill-current" />
-                                <span className="font-semibold">{repo.stargazers_count.toLocaleString()}</span>
+                <div className="mt-4 pt-3 border-t border-border/50">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs text-muted">
+                            <div className="flex items-center gap-1 hover:text-accent transition-colors">
+                                <Star className="w-3.5 h-3.5" />
+                                <span className="font-medium">{repo.stargazers_count.toLocaleString()}</span>
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 hover:text-accent transition-colors">
                                 <GitFork className="w-3.5 h-3.5" />
-                                <span className="font-semibold">{repo.forks_count.toLocaleString()}</span>
+                                <span className="font-medium">{repo.forks_count.toLocaleString()}</span>
                             </div>
                         </div>
                         
@@ -106,10 +98,10 @@ export function SavedRepoCard({ repo, onRemove }) {
                         {repo.language && (
                             <div className="flex items-center gap-1.5 text-xs font-medium">
                                 <span
-                                    className="w-2.5 h-2.5 rounded-full"
-                                    style={{ backgroundColor: languageColors[repo.language] || '#858585' }}
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ backgroundColor: languageColors[repo.language] || 'var(--muted)' }}
                                 />
-                                <span className="text-gray-700 dark:text-gray-300">{repo.language}</span>
+                                <span className="text-muted">{repo.language}</span>
                             </div>
                         )}
                     </div>
@@ -120,13 +112,13 @@ export function SavedRepoCard({ repo, onRemove }) {
                     href={repo.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`mt-2 flex items-center justify-center gap-2 py-2 px-3 rounded-xl
-                              bg-blue-600 text-white font-semibold text-xs
-                              hover:bg-blue-700
-                              transition-all duration-300
-                              ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+                    className={`mt-4 w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg
+                              bg-accent text-white font-semibold text-xs
+                              hover:bg-accent-hover
+                              transition-all duration-200 shadow-sm
+                              ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}
                 >
-                    View on GitHub
+                    View Repo
                     <ExternalLink className="w-3.5 h-3.5" />
                 </a>
             </div>
