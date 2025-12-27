@@ -4,6 +4,9 @@ from routers import auth, api
 import uvicorn
 import os
 
+from config import get_settings
+
+settings = get_settings()
 app = FastAPI(title="Lens+Github")
 
 # CORS Configuration
@@ -11,7 +14,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://localhost:5173", 
+        "http://localhost:5173",
+        settings.frontend_url,
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
