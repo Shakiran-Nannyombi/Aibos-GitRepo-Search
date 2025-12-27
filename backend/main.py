@@ -12,7 +12,6 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173", 
-        "https://lensgithub.netlify.app", 
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
@@ -37,8 +36,6 @@ async def root():
     }
 
 
-# For Vercel deployment
-handler = app
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

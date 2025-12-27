@@ -4,11 +4,6 @@ A modern, secure web application for searching and discovering GitHub repositori
 
 ![Lens+GitHub Repository Search](image.png)
 
-## 🚀 Live Demo
-
-**Frontend**: [https://lensgithub.netlify.app/](https://lensgithub.netlify.app/)  
-**Backend API**: [https://aibos-gitrepo-search.onrender.com](https://aibos-gitrepo-search.onrender.com)
-
 ## Overview
 
 This application provides an intuitive interface to search through GitHub's vast repository database with powerful filtering options. Users can authenticate with their GitHub account to access enhanced search capabilities and avoid rate limits.
@@ -135,26 +130,6 @@ The application uses modern development practices:
 - Component-based React architecture
 - Responsive design with TailwindCSS
 - Error handling and loading states
-
-## 🚀 Deployment
-
-### Production URLs
-- **Frontend**: [https://lensgithub.netlify.app/](https://lensgithub.netlify.app/) (Netlify)
-- **Backend**: [https://aibos-gitrepo-search.onrender.com](https://aibos-gitrepo-search.onrender.com) (Render)
-
-### Security Features
-- ✅ **CSRF Protection**: State parameter validation in OAuth flow
-- ✅ **Secure Cookies**: HTTP-only cookies for token storage
-- ✅ **Input Validation**: Comprehensive API input sanitization
-- ✅ **CORS Security**: Restricted to specific origins
-- ✅ **Rate Limiting**: GitHub API rate limit handling
-- ✅ **Error Handling**: No sensitive information disclosure
-
-### Deployment Stack
-- **Frontend**: Netlify (Static hosting with CDN)
-- **Backend**: Render (Python web service)
-- **Authentication**: GitHub OAuth 2.0
-- **Database**: Stateless (uses GitHub API)
 
 ## License
 

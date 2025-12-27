@@ -45,7 +45,7 @@ export function Footer() {
         {/* Bottom text */}
         <div className="mt-6 pt-6 border-t" style={{borderColor: '#3d2a2f'}}>
           <p className="text-center text-xs" style={{color: '#9a8a8d'}}>
-            Built with React, FastAPI, and deployed on Vercel
+            Built with React and FastAPI
           </p>
         </div>
       </div>
