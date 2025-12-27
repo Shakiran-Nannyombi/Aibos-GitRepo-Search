@@ -52,7 +52,7 @@ def test_github_callback_success(client: TestClient):
     
     assert "localhost:3000/auth/callback" in location
     # Check for secure cookies instead of URL parameters
-    assert "auth_token" in response.cookies
+    assert "github_token" in response.cookies
     assert "user_data" in response.cookies
 
 
@@ -66,10 +66,10 @@ def test_github_callback_token_error(client: TestClient):
     
     # Set oauth_state cookie and call with state parameter
     client.cookies.set("oauth_state", "test_state")
-    response = client.get("/auth/callback?code=invalid_code&state=test_state")
+    response = client.get("/auth/callback?code=invalid_code&state=test_state", follow_redirects=False)
     
-    assert response.status_code == 500  # Exception handler wraps it in 500
-    assert "Authentication failed" in response.json()["detail"]
+    assert response.status_code == 307
+    assert "auth/error?message=authentication_failed" in response.headers["location"]
 
 
 @respx.mock
@@ -90,10 +90,10 @@ def test_github_callback_user_error(client: TestClient):
     
     # Set oauth_state cookie and call with state parameter
     client.cookies.set("oauth_state", "test_state")
-    response = client.get("/auth/callback?code=test_code&state=test_state")
+    response = client.get("/auth/callback?code=test_code&state=test_state", follow_redirects=False)
     
-    assert response.status_code == 500  # Exception handler wraps it in 500
-    assert "Authentication failed" in response.json()["detail"]
+    assert response.status_code == 307
+    assert "auth/error?message=authentication_failed" in response.headers["location"]
 
 
 def test_github_callback_missing_code(client: TestClient):

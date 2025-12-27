@@ -20,26 +20,21 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-// Mock localStorage
-const localStorageMock = {
-  setItem: vi.fn(),
-  getItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-}
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
-})
-
 describe('AuthCallback', () => {
+  let cookieSpy
+
   beforeEach(() => {
     mockSetUser.mockClear()
     mockNavigate.mockClear()
-    localStorageMock.setItem.mockClear()
     
-    // Clear URL search params
-    delete window.location
-    window.location = { search: '' }
+    // Mock document.cookie
+    cookieSpy = vi.spyOn(document, 'cookie', 'get').mockReturnValue('')
+    vi.spyOn(document, 'cookie', 'set').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    cookieSpy.mockRestore()
+    vi.restoreAllMocks()
   })
 
   const renderAuthCallback = () => {
@@ -52,11 +47,10 @@ describe('AuthCallback', () => {
 
   it('renders loading spinner', () => {
     renderAuthCallback()
-    
     expect(screen.getByText('Completing authentication...')).toBeInTheDocument()
   })
 
-  it('handles successful authentication with valid token and user', async () => {
+  it('handles successful authentication with valid cookie', async () => {
     const mockUser = {
       id: 12345,
       login: 'testuser',
@@ -64,51 +58,23 @@ describe('AuthCallback', () => {
       avatar_url: 'https://github.com/images/error/testuser_happy.gif'
     }
     
-    // Mock URL search params
-    window.location.search = `?token=test_token&user=${encodeURIComponent(JSON.stringify(mockUser))}`
+    // Mock the user_data cookie
+    cookieSpy.mockReturnValue(`user_data=${encodeURIComponent(JSON.stringify(mockUser))}`)
     
     renderAuthCallback()
     
     await waitFor(() => {
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('github_token', 'test_token')
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('github_user', JSON.stringify(mockUser))
       expect(mockSetUser).toHaveBeenCalledWith(mockUser)
     })
     
-    // Wait for navigation timeout
+    // Wait for navigation timeout (500ms)
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true })
     }, { timeout: 1000 })
   })
 
-  it('handles missing token parameter', async () => {
-    window.location.search = '?user={"id":123,"login":"test"}'
-    
-    renderAuthCallback()
-    
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/?error=missing_params', { replace: true })
-    })
-    
-    expect(mockSetUser).not.toHaveBeenCalled()
-    expect(localStorageMock.setItem).not.toHaveBeenCalled()
-  })
-
-  it('handles missing user parameter', async () => {
-    window.location.search = '?token=test_token'
-    
-    renderAuthCallback()
-    
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/?error=missing_params', { replace: true })
-    })
-    
-    expect(mockSetUser).not.toHaveBeenCalled()
-    expect(localStorageMock.setItem).not.toHaveBeenCalled()
-  })
-
-  it('handles invalid JSON in user parameter', async () => {
-    window.location.search = '?token=test_token&user=invalid_json'
+  it('handles missing cookie', async () => {
+    cookieSpy.mockReturnValue('')
     
     renderAuthCallback()
     
@@ -119,13 +85,15 @@ describe('AuthCallback', () => {
     expect(mockSetUser).not.toHaveBeenCalled()
   })
 
-  it('handles empty search params', async () => {
-    window.location.search = ''
+  it('handles invalid JSON in cookie', async () => {
+    cookieSpy.mockReturnValue('user_data=invalid_json')
     
     renderAuthCallback()
     
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/?error=missing_params', { replace: true })
+      expect(mockNavigate).toHaveBeenCalledWith('/?error=auth_failed', { replace: true })
     })
+    
+    expect(mockSetUser).not.toHaveBeenCalled()
   })
 })
