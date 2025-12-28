@@ -6,7 +6,12 @@ import { Dashboard } from './components/Dashboard'
 import { SavedRepos } from './components/SavedRepos'
 import { Analytics } from './components/Analytics'
 import { AuthCallback } from './components/AuthCallback'
+import { Login } from './components/Login'
+import { Signup } from './components/Signup'
+import { Features } from './components/Features'
+import { About } from './components/About'
 import { Footer } from './components/Footer'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 
@@ -20,9 +25,10 @@ function HomePage() {
   }
   
   return (
-    <div className="min-h-screen transition-colors duration-300 flex flex-col" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
+    <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
       <Navbar />
       <Hero />
+      <Features />
       <Footer />
     </div>
   );
@@ -37,66 +43,73 @@ function App() {
             {/* Home page - redirects to dashboard if logged in */}
             <Route path="/" element={<HomePage />} />
             
-            {/* Dashboard - already includes its own Navbar */}
+            {/* Dashboard - protected */}
             <Route path="/dashboard" element={
-              <div className="min-h-screen transition-colors duration-300 flex flex-col" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
-                <Dashboard />
-                <Footer />
-              </div>
+              <ProtectedRoute>
+                <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
+                  <Dashboard />
+                  <Footer />
+                </div>
+              </ProtectedRoute>
             } />
             
-            {/* Saved Repos */}
+            {/* Saved Repos - protected */}
             <Route path="/saved" element={
-              <div className="min-h-screen transition-colors duration-300 relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
-                {/* Animated background grid */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `
-                      linear-gradient(to right, currentColor 1px, transparent 1px),
-                      linear-gradient(to bottom, currentColor 1px, transparent 1px)
-                    `,
-                    backgroundSize: '50px 50px',
-                    color: 'currentColor'
-                  }} />
+              <ProtectedRoute>
+                <div className="min-h-screen transition-colors duration-300 relative overflow-hidden bg-background text-foreground">
+                  <div className="relative z-10 flex flex-col min-h-screen">
+                    <Navbar />
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
+                      <SavedRepos />
+                    </main>
+                    <Footer />
+                  </div>
                 </div>
-                
-                <div className="relative z-10 flex flex-col min-h-screen">
-                  <Navbar noBorder={true} />
-                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
-                    <SavedRepos />
-                  </main>
-                  <Footer />
-                </div>
-              </div>
+              </ProtectedRoute>
             } />
             
-            {/* Analytics */}
+            {/* Analytics - protected */}
             <Route path="/analytics" element={
-              <div className="min-h-screen transition-colors duration-300 relative overflow-hidden" style={{backgroundColor: '#0b0405', color: '#f4e6e9'}}>
-                {/* Animated background grid */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `
-                      linear-gradient(to right, currentColor 1px, transparent 1px),
-                      linear-gradient(to bottom, currentColor 1px, transparent 1px)
-                    `,
-                    backgroundSize: '50px 50px',
-                    color: 'currentColor'
-                  }} />
+              <ProtectedRoute>
+                <div className="min-h-screen transition-colors duration-300 relative overflow-hidden bg-background text-foreground">
+                  <div className="relative z-10 flex flex-col min-h-screen">
+                    <Navbar />
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
+                      <Analytics />
+                    </main>
+                    <Footer />
+                  </div>
                 </div>
-                
-                <div className="relative z-10 flex flex-col min-h-screen">
-                  <Navbar noBorder={true} />
-                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
-                    <Analytics />
-                  </main>
-                  <Footer />
-                </div>
-              </div>
+              </ProtectedRoute>
             } />
             
             {/* Auth callback */}
             <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Local Auth */}
+            <Route path="/login" element={
+              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
+                <Navbar />
+                <Login />
+                <Footer />
+              </div>
+            } />
+            <Route path="/register" element={
+              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
+                <Navbar />
+                <Signup />
+                <Footer />
+              </div>
+            } />
+            
+            {/* About Page */}
+            <Route path="/about" element={
+              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
+                <Navbar />
+                <About />
+                <Footer />
+              </div>
+            } />
             
             {/* Catch all - redirect to home */}
             <Route path="*" element={<Navigate to="/" replace />} />

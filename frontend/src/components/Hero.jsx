@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 // SVG Icon Components
@@ -81,6 +83,9 @@ export function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (containerRef.current) {
@@ -121,22 +126,22 @@ export function Hero() {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, typingSpeed]);
 
-  // Generate GitHub-themed floating elements in a grid pattern
+  // Generate grid-based GitHub-themed floating elements
   const iconComponents = [StarIcon, GitBranchIcon, CodeIcon, GitCommitIcon, SearchIcon, FolderIcon, GitPullRequestIcon, PackageIcon];
   
   const floatingElements = [];
-  const cols = 8;
   const rows = 6;
+  const cols = 8;
   
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       floatingElements.push({
-        id: row * cols + col,
-        initialX: (col / (cols - 1)) * 100,
-        initialY: (row / (rows - 1)) * 100,
-        size: 40 + (Math.random() * 20 - 10),
-        Icon: iconComponents[(row * cols + col) % iconComponents.length],
-        rotation: Math.random() * 360
+        id: `${r}-${c}`,
+        initialX: (c / cols) * 100 + (Math.random() * 5), // Grid X + slight offset
+        initialY: (r / rows) * 100 + (Math.random() * 5), // Grid Y + slight offset
+        size: 30 + Math.random() * 20, // Random size 30-50px
+        Icon: iconComponents[(r + c) % iconComponents.length],
+        rotation: Math.random() * 360,
       });
     }
   }
@@ -144,10 +149,10 @@ export function Hero() {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8 bg-background"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-48 bg-background"
     >
       {/* Animated background grid */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0" style={{
           backgroundImage: `
             linear-gradient(to right, currentColor 1px, transparent 1px),
@@ -173,14 +178,14 @@ export function Hero() {
         return (
           <div
             key={element.id}
-            className="absolute pointer-events-none transition-all duration-300 ease-out opacity-10 text-muted"
+            className="absolute z-0 pointer-events-none transition-all duration-300 ease-out opacity-50 text-foreground"
             style={{
               left: `${element.initialX}%`,
               top: `${element.initialY}%`,
               width: `${element.size}px`,
               height: `${element.size}px`,
               transform: `translate(${offsetX}px, ${offsetY}px) rotate(${element.rotation + influence * 20}deg)`,
-              filter: `blur(${Math.max(0, 2 - influence * 2)}px)`,
+              filter: `blur(${Math.max(0, 3 - influence * 3)}px)`,
             }}
           >
             <IconComponent />
@@ -214,18 +219,24 @@ export function Hero() {
         </div>
 
         {/* Feature highlights */}
-        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-muted">
+        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-foreground">
           Your gateway to exploring millions of GitHub repositories. 
           Search, discover, and connect with the world's largest developer community.
         </p>
 
         {/* Call to action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button className="group relative px-10 py-4 font-bold text-lg rounded-xl transition-all duration-200 bg-accent text-white hover:bg-accent-hover hover:shadow-lg active:scale-95">
+          <button 
+            onClick={login}
+            className="group relative px-10 py-4 font-bold text-lg rounded-xl transition-all duration-200 bg-accent text-white hover:bg-accent-hover hover:shadow-lg active:scale-95"
+          >
             <span className="relative z-10 font-bold">Start Exploring</span>
           </button>
           
-          <button className="px-10 py-4 border border-border font-semibold text-lg rounded-xl transition-all duration-200 hover:bg-header hover:border-muted text-foreground active:scale-95">
+          <button 
+            onClick={() => navigate('/about')}
+            className="px-10 py-4 border border-border font-semibold text-lg rounded-xl transition-all duration-200 hover:bg-header hover:border-muted text-foreground active:scale-95"
+          >
             Learn More
           </button>
         </div>

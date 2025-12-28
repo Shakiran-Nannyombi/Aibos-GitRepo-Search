@@ -54,11 +54,18 @@ def get_callback_url(request: Request) -> str:
     return f"{request.base_url.scheme}://{request.base_url.hostname}/auth/callback"
 
 
+from database import get_db
+from models.local_user import LocalUser
+from sqlalchemy.orm import Session
+from security import SECRET_KEY, ALGORITHM
+from jose import jwt as jose_jwt
+
 @router.get("/github")
 async def github_auth(
     request: Request, 
     settings: Settings = Depends(get_settings),
-    origin: str = Header(None)
+    origin: str = Header(None),
+    token: str = None  # Local token for linking
 ):
     """Redirect to GitHub OAuth page with CSRF protection"""
     # Generate CSRF state token
@@ -82,26 +89,20 @@ async def github_auth(
     response = RedirectResponse(auth_url)
     
     # Set state and frontend URL in secure cookies
-    response.set_cookie(
-        "oauth_state", 
-        state, 
-        max_age=600,  # 10 minutes
-        httponly=True,
-        secure=request.base_url.scheme == "https",
-        samesite="lax"
-    )
+    cookie_params = {
+        "max_age": 600,
+        "httponly": True,
+        "secure": request.base_url.scheme == "https",
+        "samesite": "lax"
+    }
     
-    # Store frontend URL for callback redirect
-    response.set_cookie(
-        "frontend_url",
-        frontend_url,
-        max_age=600,  # 10 minutes
-        httponly=True,
-        secure=request.base_url.scheme == "https",
-        samesite="lax"
-    )
+    response.set_cookie("oauth_state", state, **cookie_params)
+    response.set_cookie("frontend_url", frontend_url, **cookie_params)
     
-    logger.info(f"Initiating OAuth flow - Frontend: {frontend_url}, Callback: {callback_url}")
+    if token:
+        response.set_cookie("link_token", token, **cookie_params)
+    
+    logger.info(f"Initiating OAuth flow - Frontend: {frontend_url}, Link: {token is not None}")
     return response
 
 
@@ -110,7 +111,8 @@ async def github_callback(
     code: str, 
     state: str,
     request: Request,
-    settings: Settings = Depends(get_settings)
+    settings: Settings = Depends(get_settings),
+    db: Session = Depends(get_db)
 ):
     """Handle GitHub OAuth callback with CSRF validation"""
     logger.info("Processing OAuth callback")
@@ -124,8 +126,10 @@ async def github_callback(
     # Get stored frontend URL
     frontend_url = request.cookies.get("frontend_url")
     if not frontend_url:
-        # Fallback to dynamic detection
         frontend_url = get_frontend_url(request)
+    
+    # Check for linking intent
+    link_token = request.cookies.get("link_token")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -140,15 +144,10 @@ async def github_callback(
                 }
             )
             
-            if token_response.status_code != 200:
-                logger.error(f"Token exchange failed: {token_response.status_code}")
-                raise HTTPException(status_code=400, detail="Failed to get access token")
-            
             token_data = token_response.json()
             access_token = token_data.get("access_token")
             
             if not access_token:
-                logger.error("No access token in response")
                 raise HTTPException(status_code=400, detail="No access token received")
             
             # Get user information
@@ -159,39 +158,45 @@ async def github_callback(
                     "Accept": "application/vnd.github.v3+json",
                 }
             )
-            
-            if user_response.status_code != 200:
-                logger.error(f"User info fetch failed: {user_response.status_code}")
-                raise HTTPException(status_code=400, detail="Failed to get user info")
-            
             user_data = user_response.json()
             
-            # Create User object
-            user = User(**user_data)
+            # If linking, update local user
+            if link_token:
+                try:
+                    payload = jose_jwt.decode(link_token, SECRET_KEY, algorithms=[ALGORITHM])
+                    email = payload.get("sub")
+                    if email:
+                        local_user = db.query(LocalUser).filter(LocalUser.email == email).first()
+                        if local_user:
+                            local_user.github_id = user_data.get("id")
+                            local_user.github_token = access_token
+                            local_user.avatar_url = user_data.get("avatar_url")
+                            db.commit()
+                            logger.info(f"Linked GitHub account {user_data.get('login')} to local user {email}")
+                except Exception as link_err:
+                    logger.error(f"Failed to link account: {str(link_err)}")
             
-            # Create redirect response to frontend callback URL
+            # Create redirect response
             callback_redirect = f"{frontend_url}/auth/callback"
             response = RedirectResponse(url=callback_redirect)
             
-            # Determine if we're in production
             is_production = request.base_url.scheme == "https"
             
-            # Set secure HTTP-only cookies
+            # Set cookies
             response.set_cookie(
                 key="github_token",
                 value=access_token,
-                max_age=3600,  # 1 hour
+                max_age=3600,
                 httponly=True,
                 secure=is_production,
                 samesite="lax"
             )
             
-            # Set user data in a cookie that the frontend can read
             response.set_cookie(
                 key="user_data",
-                value=user.model_dump_json(),
+                value=json.dumps(user_data),
                 max_age=3600,
-                httponly=False,  # Frontend needs to read this
+                httponly=False,
                 secure=is_production,
                 samesite="lax"
             )
@@ -199,9 +204,14 @@ async def github_callback(
             # Clear temporary cookies
             response.delete_cookie("oauth_state")
             response.delete_cookie("frontend_url")
+            response.delete_cookie("link_token")
             
-            logger.info(f"OAuth authentication successful for user: {user.login}, redirecting to: {callback_redirect}")
             return response
+            
+    except Exception as e:
+        logger.error(f"OAuth authentication failed: {str(e)}")
+        error_redirect = f"{frontend_url}/auth/error?message=authentication_failed"
+        return RedirectResponse(url=error_redirect)
             
     except Exception as e:
         logger.error(f"OAuth authentication failed: {str(e)}")

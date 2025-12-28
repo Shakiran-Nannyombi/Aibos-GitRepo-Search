@@ -65,9 +65,25 @@ async def search_repositories(
     }
     
     # Add authorization if provided
+    github_token = None
     if authorization and authorization.startswith("Bearer "):
         token = authorization.replace("Bearer ", "")
-        headers["Authorization"] = f"Bearer {token}"
+        
+        # Try decoding as local JWT to get linked GitHub token
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            email = payload.get("sub")
+            if email:
+                with next(get_db()) as db:
+                    user = db.query(LocalUser).filter(LocalUser.email == email).first()
+                    if user and user.github_token:
+                        github_token = user.github_token
+        except JWTError:
+            # Fallback: Treat as the GitHub token itself
+            github_token = token
+            
+    if github_token:
+        headers["Authorization"] = f"Bearer {github_token}"
     
     async with httpx.AsyncClient() as client:
         try:
@@ -115,10 +131,17 @@ async def search_repositories(
             raise HTTPException(status_code=503, detail="Connection error occurred")
 
 
+from jose import jwt, JWTError
+from security import SECRET_KEY, ALGORITHM
+from database import get_db
+from models.local_user import LocalUser
+from sqlalchemy.orm import Session
+
 @router.get("/user")
 async def get_user(
     authorization: str,
-    settings: Settings = Depends(get_settings)
+    settings: Settings = Depends(get_settings),
+    db: Session = Depends(get_db)
 ):
     """Get authenticated user information"""
     if not authorization.startswith("Bearer "):
@@ -126,6 +149,26 @@ async def get_user(
     
     token = authorization.replace("Bearer ", "")
     
+    # Try decoding as local JWT first
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if email:
+            user = db.query(LocalUser).filter(LocalUser.email == email).first()
+            if user:
+                return {
+                    "login": user.username,
+                    "id": user.id,
+                    "avatar_url": user.avatar_url,
+                    "name": user.username,
+                    "email": user.email,
+                    "bio": "Local User",
+                    "github_connected": user.github_id is not None
+                }
+    except JWTError:
+        pass # Not a local token, try GitHub
+    
+    # Fallback to GitHub API
     async with httpx.AsyncClient() as client:
         response = await client.get(
             f"{settings.github_api_base}/user",
@@ -138,4 +181,6 @@ async def get_user(
         if response.status_code != 200:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
         
-        return response.json()
+        data = response.json()
+        data["github_connected"] = True # If we got here with a token, it's connected
+        return data

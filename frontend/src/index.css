@@ -4,7 +4,7 @@
   --color-*: initial;
   --color-black: #000000;
   --color-white: #FFFFFF;
-  
+
   --color-background: var(--background);
   --color-header: var(--header);
   --color-foreground: var(--foreground);
@@ -21,7 +21,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -38,9 +38,9 @@
   --card: #ffffff;
 }
 
-body.dark {
+.dark {
   /* GitHub Dark Theme */
-  --background: #0d1117;
+  --background: #000000;
   --header: #161b22;
   --foreground: #e6edf3;
   --muted: #848d97;
@@ -69,7 +69,12 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--foreground);
   font-weight: 600;
 }

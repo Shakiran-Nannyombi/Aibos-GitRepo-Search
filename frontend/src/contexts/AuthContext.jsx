@@ -44,8 +44,62 @@ export function AuthProvider({ children }) {
     window.location.href = '/';
   };
 
+  const loginUser = async (email, password) => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('github_token', data.access_token);
+      localStorage.setItem('github_user', JSON.stringify(data.user));
+      setUser(data.user);
+      setIsAuthenticated(true);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const registerUser = async (email, username, password) => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const connectGithub = () => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+    const localToken = localStorage.getItem('github_token');
+    window.location.href = `${backendUrl}/auth/github?token=${localToken}`;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, setUser, loginUser, registerUser, connectGithub }}>
       {children}
     </AuthContext.Provider>
   );
