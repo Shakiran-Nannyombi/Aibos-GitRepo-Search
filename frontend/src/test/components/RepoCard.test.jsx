@@ -53,7 +53,7 @@ describe('RepoCard', () => {
     expect(screen.getByText('JavaScript')).toBeInTheDocument()
     expect(screen.getByText('100')).toBeInTheDocument()
     expect(screen.getByText('50')).toBeInTheDocument()
-    expect(screen.getByAltText('testowner')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'testowner on GitHub' })).toBeInTheDocument()
   })
 
   it('handles saving a repository to localStorage', () => {
@@ -80,8 +80,8 @@ describe('RepoCard', () => {
     expect(screen.getByTitle('Save repository')).toBeInTheDocument()
   })
 
-  it('renders "Today" for current date', () => {
+  it('renders "today" for current date', () => {
     render(<RepoCard repo={mockRepo} />)
-    expect(screen.getByText(/Updated Today/)).toBeInTheDocument()
+    expect(screen.getByText(/Updated today/)).toBeInTheDocument()
   })
 })

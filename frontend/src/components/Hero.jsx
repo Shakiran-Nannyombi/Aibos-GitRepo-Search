@@ -6,10 +6,10 @@ import { usePageTitle } from '../hooks/usePageTitle';
 
 const QUERY = 'cli tool  language:rust  stars:>20000';
 
-// Illustrative results for the example query (star counts rounded).
+// Illustrative results for the example query, sorted by stars like the real search (counts rounded).
 const PREVIEW = [
-  { name: 'BurntSushi/ripgrep', desc: 'Recursively search directories for a regex pattern while respecting your gitignore.', stars: 52, updated: 'this week' },
   { name: 'sharkdp/bat', desc: 'A cat(1) clone with wings: syntax highlighting and Git integration.', stars: 53, updated: 'this week' },
+  { name: 'BurntSushi/ripgrep', desc: 'Recursively search directories for a regex pattern while respecting your gitignore.', stars: 52, updated: 'this week' },
   { name: 'sharkdp/fd', desc: 'A simple, fast and user-friendly alternative to find.', stars: 37, updated: 'last week' },
 ];
 
@@ -95,7 +95,7 @@ export function Hero() {
           {/* Lens ring */}
           <div
             aria-hidden="true"
-            className="absolute -top-16 -left-10 w-48 h-48 rounded-full border-[10px] border-accent/15 pointer-events-none hidden sm:block"
+            className="absolute -top-16 -left-10 w-48 h-48 rounded-full border-[10px] border-accent/15 pointer-events-none hidden lg:block"
           />
 
           <div className="relative rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] p-3 sm:p-4">
@@ -128,7 +128,7 @@ export function Hero() {
                         <span className="text-muted font-normal">{repo.name.split('/')[0]}/</span>
                         {repo.name.split('/')[1]}
                       </span>
-                      <span className="flex items-center gap-1 text-signal font-semibold tabular-nums shrink-0">
+                      <span className="flex items-center justify-end gap-1 min-w-[4.5rem] text-signal font-semibold shrink-0">
                         <Star className="w-4 h-4 fill-current" aria-hidden="true" />
                         {(repo.stars * progress).toFixed(1)}k
                       </span>

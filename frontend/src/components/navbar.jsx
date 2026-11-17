@@ -5,6 +5,7 @@ import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
+import { Avatar } from './Avatar';
 
 const publicLinks = [
   { to: '/', label: 'Home', end: true },
@@ -134,13 +135,11 @@ export function Navbar({ isHidden = false }) {
                   aria-haspopup="menu"
                   className="flex items-center gap-2 pl-1.5 pr-2.5 py-1.5 rounded-[var(--radius-control)] border border-border text-foreground hover:bg-background transition-colors"
                 >
-                  {user.avatar_url ? (
-                    <img src={user.avatar_url} alt="" className="w-6 h-6 rounded-full" />
-                  ) : (
-                    <span className="w-6 h-6 rounded-full bg-accent text-on-accent grid place-items-center text-xs font-bold">
-                      {(user.login || user.username || '?').charAt(0).toUpperCase()}
-                    </span>
-                  )}
+                  <Avatar
+                    src={user.avatar_url}
+                    name={user.login || user.username}
+                    className="w-6 h-6 rounded-full text-xs"
+                  />
                   <span className="text-sm font-medium max-w-[10rem] truncate">{user.login || user.username}</span>
                   <ChevronDown className={`w-4 h-4 text-muted transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
                 </button>

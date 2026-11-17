@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Share2, UserPlus, Mail, MessageCircle, X, Copy, Check, Linkedin, Facebook, Link2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Share2, UserPlus, Mail, MessageCircle, X, Copy, Check, Linkedin, Facebook } from 'lucide-react';
+import { Avatar } from './Avatar';
 
 export function AnalyticsSidebar({ isOpen, onClose, user }) {
     const [activeTab, setActiveTab] = useState('share');
@@ -77,6 +78,13 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
         }
     };
 
+    useEffect(() => {
+        if (!isOpen) return;
+        const onKey = (e) => e.key === 'Escape' && onClose();
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
@@ -88,20 +96,24 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
             />
 
             {/* Sidebar */}
-            <div className="fixed right-0 top-0 h-full w-full sm:w-96 
+            <aside
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="share-title"
+                className="fixed right-0 top-0 h-full w-full sm:w-96 
                           bg-background border-l border-border 
                           z-[61] shadow-[var(--shadow-float)] overflow-y-auto">
                 
                 {/* Header */}
                 <div className="sticky top-0 bg-background border-b border-border p-6 z-10">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-foreground">
+                        <h2 id="share-title" className="text-xl font-bold text-foreground">
                             Share your analytics
                         </h2>
                         <button
                             onClick={onClose}
-                            aria-label="Close"
-                            className="p-2 rounded-[var(--radius-control)] hover:bg-header transition-colors"
+                            aria-label="Close share panel"
+                            className="p-2 -mr-2 rounded-[var(--radius-control)] hover:bg-surface transition-colors"
                         >
                             <X className="w-5 h-5 text-muted" />
                         </button>
@@ -141,10 +153,10 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             {/* Profile Preview */}
                             <div className="p-4 rounded-[var(--radius-row)] border border-border bg-header shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <img
+                                    <Avatar
                                         src={user.avatar_url}
-                                        alt={user.login}
-                                        className="w-12 h-12 rounded-full border-2 border-border"
+                                        name={user.name || user.login}
+                                        className="w-12 h-12 rounded-full border-2 border-border text-lg"
                                     />
                                     <div className="min-w-0">
                                         <p className="font-bold text-foreground truncate">
@@ -173,6 +185,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                     />
                                     <button
                                         onClick={copyToClipboard}
+                                        aria-label={copied ? 'Link copied' : 'Copy link'}
                                         className={`px-4 py-2 rounded-[var(--radius-control)] font-semibold transition-all shadow-sm ${
                                             copied
                                                 ? 'bg-foreground text-background'
@@ -194,36 +207,36 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         onClick={shareViaEmail}
                                         className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-surface transition-all font-medium text-sm"
+                                                 hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <Mail className="w-4 h-4 text-muted" />
+                                        <Mail className="w-4 h-4" />
                                         Email
                                     </button>
                                     <button
                                         onClick={shareViaTwitter}
                                         className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-surface transition-all font-medium text-sm"
+                                                 hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <MessageCircle className="w-4 h-4 text-muted" />
-                                        Twitter
+                                        <MessageCircle className="w-4 h-4" />
+                                        X (Twitter)
                                     </button>
                                     <button
                                         onClick={shareViaLinkedIn}
                                         className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-surface transition-all font-medium text-sm"
+                                                 hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <Linkedin className="w-4 h-4 text-muted" />
+                                        <Linkedin className="w-4 h-4" />
                                         LinkedIn
                                     </button>
                                     <button
                                         onClick={shareViaFacebook}
                                         className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-surface transition-all font-medium text-sm"
+                                                 hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <Facebook className="w-4 h-4 text-muted" />
+                                        <Facebook className="w-4 h-4" />
                                         Facebook
                                     </button>
                                 </div>
@@ -326,7 +339,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                         </>
                     )}
                 </div>
-            </div>
+            </aside>
         </>
     );
 }

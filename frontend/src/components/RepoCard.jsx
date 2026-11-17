@@ -1,14 +1,15 @@
 import { Star, GitFork, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useState } from 'react';
 import { languageColor } from '../lib/languageColors';
+import { Avatar } from './Avatar';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffDays = Math.floor(Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
+    if (diffDays === 0) return 'today';
+    if (diffDays === 1) return 'yesterday';
     if (diffDays < 30) return `${diffDays} days ago`;
     const plural = (n, unit) => `${n} ${unit}${n === 1 ? '' : 's'} ago`;
     if (diffDays < 365) return plural(Math.floor(diffDays / 30), 'month');
@@ -45,12 +46,12 @@ export function RepoCard({ repo }) {
                 href={`https://github.com/${repo.owner.login}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${repo.owner.login} on GitHub`}
                 className="relative z-10 shrink-0 self-start rounded-[var(--radius-control)]"
             >
-                <img
+                <Avatar
                     src={repo.owner.avatar_url}
-                    alt={repo.owner.login}
-                    loading="lazy"
+                    name={repo.owner.login}
                     className="w-10 h-10 rounded-[var(--radius-control)] border border-border"
                 />
             </a>

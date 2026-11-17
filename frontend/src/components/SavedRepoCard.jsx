@@ -1,5 +1,6 @@
 import { Star, GitFork, Trash2 } from 'lucide-react';
 import { languageColor } from '../lib/languageColors';
+import { Avatar } from './Avatar';
 
 export function SavedRepoCard({ repo, onRemove }) {
     const handleRemove = (e) => {
@@ -14,11 +15,10 @@ export function SavedRepoCard({ repo, onRemove }) {
     return (
         <article className="relative h-full flex flex-col p-4 sm:p-5 rounded-[var(--radius-row)] border border-border bg-surface hover:border-muted/60 transition-colors">
             <div className="flex items-center gap-2.5 pr-10">
-                <img
+                <Avatar
                     src={repo.owner.avatar_url}
-                    alt={repo.owner.login}
-                    loading="lazy"
-                    className="w-6 h-6 rounded-full border border-border"
+                    name={repo.owner.login}
+                    className="w-6 h-6 rounded-full border border-border text-xs"
                 />
                 <h3 className="min-w-0 text-[16px] font-semibold truncate">
                     <a
@@ -33,9 +33,9 @@ export function SavedRepoCard({ repo, onRemove }) {
                 </h3>
             </div>
 
-            {repo.description && (
-                <p className="mt-2 text-sm text-muted leading-relaxed line-clamp-2">{repo.description}</p>
-            )}
+            <p className={`mt-2 text-sm leading-relaxed line-clamp-2 ${repo.description ? 'text-muted' : 'text-muted/70 italic'}`}>
+                {repo.description || 'No description provided.'}
+            </p>
 
             <div className="mt-auto pt-4 flex items-center gap-x-4 gap-y-1 flex-wrap text-sm text-muted">
                 {repo.language && (
