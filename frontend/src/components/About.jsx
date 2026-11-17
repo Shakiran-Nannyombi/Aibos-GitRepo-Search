@@ -1,4 +1,4 @@
-import { Github } from 'lucide-react';
+import { GithubIcon } from './BrandIcons';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const REPO_URL = 'https://github.com/Shakiran-Nannyombi/Aibos-GitRepo-Search';
@@ -70,7 +70,7 @@ export function About() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--radius-control)] bg-accent text-on-accent font-semibold hover:bg-accent-hover transition-colors"
         >
-          <Github className="w-5 h-5" />
+          <GithubIcon className="w-5 h-5" />
           Read the source
         </a>
         <a

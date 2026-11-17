@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Share2, UserPlus, Mail, MessageCircle, X, Copy, Check, Linkedin, Facebook } from 'lucide-react';
+import { Share2, UserPlus, Mail, X, Copy, Check } from 'lucide-react';
+import { XIcon, LinkedinIcon, FacebookIcon } from './BrandIcons';
 import { Avatar } from './Avatar';
 
 export function AnalyticsSidebar({ isOpen, onClose, user }) {
@@ -218,7 +219,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                  bg-header text-foreground border border-border
                                                  hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <MessageCircle className="w-4 h-4" />
+                                        <XIcon className="w-3.5 h-3.5" />
                                         X (Twitter)
                                     </button>
                                     <button
@@ -227,7 +228,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                  bg-header text-foreground border border-border
                                                  hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <Linkedin className="w-4 h-4" />
+                                        <LinkedinIcon className="w-4 h-4" />
                                         LinkedIn
                                     </button>
                                     <button
@@ -236,7 +237,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                  bg-header text-foreground border border-border
                                                  hover:border-accent hover:text-accent transition-colors font-medium text-sm"
                                     >
-                                        <Facebook className="w-4 h-4" />
+                                        <FacebookIcon className="w-4 h-4" />
                                         Facebook
                                     </button>
                                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Star, Github } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
+import { GithubIcon } from './BrandIcons';
 import { useAuth } from '../contexts/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -68,7 +69,7 @@ export function Hero() {
               onClick={login}
               className="inline-flex items-center gap-2.5 px-5 py-3 rounded-[var(--radius-control)] bg-accent text-on-accent font-semibold hover:bg-accent-hover transition-colors"
             >
-              <Github className="w-5 h-5" />
+              <GithubIcon className="w-5 h-5" />
               Sign in with GitHub
             </button>
             <a

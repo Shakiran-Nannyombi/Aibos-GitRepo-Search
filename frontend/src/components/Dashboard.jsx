@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Github } from 'lucide-react';
+import { GithubIcon } from './BrandIcons';
 import { SearchBar } from './SearchBar';
 import { SearchFilters } from './SearchFilter';
 import { RepoCard } from './RepoCard';
@@ -123,7 +123,7 @@ export function Dashboard() {
             {/* Connection banner for email accounts */}
             {user && !user.github_connected && (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-[var(--radius-row)] border border-border bg-surface">
-                    <Github className="w-6 h-6 text-foreground shrink-0" aria-hidden="true" />
+                    <GithubIcon className="w-6 h-6 text-foreground shrink-0" aria-hidden="true" />
                     <div className="flex-1">
                         <p className="font-semibold text-foreground">Connect your GitHub account</p>
                         <p className="text-sm text-muted">Connected accounts get higher search rate limits and personal analytics.</p>

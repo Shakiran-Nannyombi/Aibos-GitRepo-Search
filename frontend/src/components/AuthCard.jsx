@@ -1,4 +1,4 @@
-import { Github } from 'lucide-react';
+import { GithubIcon } from './BrandIcons';
 
 // Shared layout for the login and sign-up pages: GitHub first, email below.
 export function AuthCard({ title, subtitle, githubLabel, onGithub, error, onSubmit, submitLabel, children, footer }) {
@@ -12,7 +12,7 @@ export function AuthCard({ title, subtitle, githubLabel, onGithub, error, onSubm
         onClick={onGithub}
         className="mt-8 w-full inline-flex items-center justify-center gap-2.5 py-3 rounded-[var(--radius-control)] bg-foreground text-background font-semibold hover:opacity-90 transition-opacity"
       >
-        <Github className="w-5 h-5" />
+        <GithubIcon className="w-5 h-5" />
         {githubLabel}
       </button>
 

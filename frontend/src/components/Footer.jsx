@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Github, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { GithubIcon } from './BrandIcons';
 import { useAuth } from '../contexts/AuthContext';
 
 const AUTHOR_URL = 'https://github.com/Shakiran-Nannyombi';
@@ -48,7 +49,7 @@ export function Footer() {
             aria-label="GitHub profile"
             className="p-2 rounded-[var(--radius-control)] border border-border text-muted hover:text-foreground hover:bg-surface transition-colors"
           >
-            <Github className="w-[18px] h-[18px]" />
+            <GithubIcon className="w-[18px] h-[18px]" />
           </a>
           <a
             href="mailto:devkiran256@gmail.com"
