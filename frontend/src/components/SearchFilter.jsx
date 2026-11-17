@@ -1,103 +1,108 @@
-import { Filter, X } from 'lucide-react';
-import { useState } from 'react';
+import { SlidersHorizontal, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const languages = [
-    'JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Rust', 'Ruby', 
+    'JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Rust', 'Ruby',
     'PHP', 'C', 'C++', 'C#', 'Swift', 'Kotlin', 'Dart', 'Shell', 'HTML', 'CSS'
 ];
 
 const sortOptions = [
-    { value: 'stars', label: 'Most Stars' },
-    { value: 'forks', label: 'Most Forks' },
-    { value: 'updated', label: 'Recently Updated' },
+    { value: 'stars', label: 'Stars' },
+    { value: 'forks', label: 'Forks' },
+    { value: 'updated', label: 'Last updated' },
 ];
 
+const DEFAULTS = { language: '', minStars: undefined, sort: 'stars', order: 'desc' };
+
+const fieldClass =
+    'w-full px-3 py-2.5 rounded-[var(--radius-control)] border border-border bg-surface text-foreground placeholder:text-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-colors';
+
 export function SearchFilters({ onFilterChange, isOpen, onToggle }) {
-    const [filters, setFilters] = useState({
-        language: '',
-        minStars: undefined,
-        sort: 'stars',
-        order: 'desc',
-    });
+    const [filters, setFilters] = useState(DEFAULTS);
+    const [applied, setApplied] = useState(DEFAULTS);
+
+    const activeCount = (applied.language ? 1 : 0) + (applied.minStars ? 1 : 0);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const onKey = (e) => e.key === 'Escape' && onToggle();
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [isOpen, onToggle]);
 
     const handleApply = () => {
+        setApplied(filters);
         onFilterChange(filters);
         onToggle();
     };
 
     const handleReset = () => {
-        const resetFilters = {
-            language: '',
-            minStars: undefined,
-            sort: 'stars',
-            order: 'desc',
-        };
-        setFilters(resetFilters);
-        onFilterChange(resetFilters);
+        setFilters(DEFAULTS);
+        setApplied(DEFAULTS);
+        onFilterChange(DEFAULTS);
     };
 
     return (
         <>
-            {/* Toggle Button */}
             <button
                 onClick={onToggle}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-border font-semibold
-                         transition-all duration-200 shadow-sm bg-header text-foreground hover:bg-border/30"
+                aria-expanded={isOpen}
+                aria-controls="search-filters"
+                className="flex items-center gap-2 px-4 rounded-[var(--radius-row)] border-2 border-border bg-surface font-semibold text-foreground hover:border-muted transition-colors"
             >
-                <Filter className="w-4 h-4" />
-                Filters
+                <SlidersHorizontal className="w-4 h-4" />
+                <span className="hidden sm:inline">Filters</span>
+                {activeCount > 0 && (
+                    <span className="min-w-5 h-5 px-1 rounded-full bg-accent text-on-accent text-xs grid place-items-center tabular-nums">
+                        {activeCount}
+                    </span>
+                )}
             </button>
 
-            {/* Sidebar */}
             {isOpen && (
                 <>
-                    <div
-                        className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-40"
-                        onClick={onToggle}
-                    />
-                    <div className="fixed right-0 top-0 h-full w-96 border-l z-50 shadow-2xl overflow-y-auto bg-background border-border">
-                        <div className="p-6 space-y-6">
-                            {/* Header */}
-                            <div className="flex items-center justify-between pb-4 border-b border-border">
-                                <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
-                                    <Filter className="w-5 h-5 text-muted" />
-                                    Search Filters
-                                </h2>
-                                <button
-                                    onClick={onToggle}
-                                    className="p-2 hover:bg-header rounded-lg transition-colors"
-                                >
-                                    <X className="w-5 h-5 text-muted hover:text-foreground" />
-                                </button>
-                            </div>
+                    <div className="fixed inset-0 bg-black/40 z-[60]" onClick={onToggle} />
+                    <aside
+                        id="search-filters"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="filters-title"
+                        className="fixed right-0 top-0 h-full w-full sm:w-96 z-[61] overflow-y-auto bg-background border-l border-border shadow-[var(--shadow-float)] flex flex-col"
+                    >
+                        <div className="flex items-center justify-between px-6 h-16 border-b border-border">
+                            <h2 id="filters-title" className="text-lg font-bold">Filters</h2>
+                            <button
+                                onClick={onToggle}
+                                aria-label="Close filters"
+                                className="p-2 -mr-2 rounded-[var(--radius-control)] text-muted hover:text-foreground hover:bg-surface transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
 
-                            {/* Language Filter */}
-                            <div className="space-y-3">
-                                <label className="block text-sm font-semibold text-foreground">
-                                    Language
-                                </label>
+                        <div className="p-6 space-y-6 flex-1">
+                            <div>
+                                <label htmlFor="filter-language" className="block text-sm font-medium mb-1.5">Language</label>
                                 <select
+                                    id="filter-language"
                                     value={filters.language}
                                     onChange={(e) => setFilters({ ...filters, language: e.target.value })}
-                                    className="w-full px-4 py-2 border border-border rounded-lg bg-header text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all cursor-pointer"
+                                    className={`${fieldClass} cursor-pointer`}
                                 >
-                                    <option value="">All Languages</option>
+                                    <option value="">Any language</option>
                                     {languages.map((lang) => (
-                                        <option key={lang} value={lang}>
-                                            {lang}
-                                        </option>
+                                        <option key={lang} value={lang}>{lang}</option>
                                     ))}
                                 </select>
                             </div>
 
-                            {/* Min Stars Filter */}
-                            <div className="space-y-3">
-                                <label className="block text-sm font-semibold text-foreground">
-                                    Minimum Stars
-                                </label>
+                            <div>
+                                <label htmlFor="filter-stars" className="block text-sm font-medium mb-1.5">Minimum stars</label>
                                 <input
+                                    id="filter-stars"
                                     type="number"
                                     min="0"
+                                    inputMode="numeric"
                                     value={filters.minStars || ''}
                                     onChange={(e) =>
                                         setFilters({
@@ -105,80 +110,65 @@ export function SearchFilters({ onFilterChange, isOpen, onToggle }) {
                                             minStars: e.target.value ? parseInt(e.target.value, 10) : undefined,
                                         })
                                     }
-                                    placeholder="e.g., 100"
-                                    className="w-full px-4 py-2 border border-border rounded-lg bg-header text-foreground placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                    placeholder="e.g. 100"
+                                    className={`${fieldClass} tabular-nums`}
                                 />
                             </div>
 
-                            {/* Sort By */}
-                            <div className="space-y-3">
-                                <label className="block text-sm font-semibold text-foreground">
-                                    Sort By
-                                </label>
+                            <div>
+                                <label htmlFor="filter-sort" className="block text-sm font-medium mb-1.5">Sort by</label>
                                 <select
+                                    id="filter-sort"
                                     value={filters.sort}
-                                    onChange={(e) =>
-                                        setFilters({
-                                            ...filters,
-                                            sort: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-4 py-2 border border-border rounded-lg bg-header text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all cursor-pointer"
+                                    onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+                                    className={`${fieldClass} cursor-pointer`}
                                 >
-                                    {sortOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
+                                    {sortOptions.map((o) => (
+                                        <option key={o.value} value={o.value}>{o.label}</option>
                                     ))}
                                 </select>
                             </div>
 
-                            {/* Order */}
-                            <div className="space-y-3">
-                                <label className="block text-sm font-semibold text-foreground">
-                                    Order
-                                </label>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() => setFilters({ ...filters, order: 'desc' })}
-                                        className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all border ${
-                                            filters.order === 'desc'
-                                                ? 'bg-foreground text-background border-foreground'
-                                                : 'bg-header text-foreground border-border hover:border-muted'
-                                        }`}
-                                    >
-                                        Descending
-                                    </button>
-                                    <button
-                                        onClick={() => setFilters({ ...filters, order: 'asc' })}
-                                        className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all border ${
-                                            filters.order === 'asc'
-                                                ? 'bg-foreground text-background border-foreground'
-                                                : 'bg-header text-foreground border-border hover:border-muted'
-                                        }`}
-                                    >
-                                        Ascending
-                                    </button>
+                            <fieldset>
+                                <legend className="block text-sm font-medium mb-1.5">Order</legend>
+                                <div className="grid grid-cols-2 p-1 rounded-[var(--radius-control)] border border-border bg-surface">
+                                    {[
+                                        { value: 'desc', label: 'High to low' },
+                                        { value: 'asc', label: 'Low to high' },
+                                    ].map((o) => (
+                                        <button
+                                            key={o.value}
+                                            type="button"
+                                            aria-pressed={filters.order === o.value}
+                                            onClick={() => setFilters({ ...filters, order: o.value })}
+                                            className={`py-2 rounded-[4px] text-sm font-medium transition-colors ${
+                                                filters.order === o.value
+                                                    ? 'bg-foreground text-background'
+                                                    : 'text-muted hover:text-foreground'
+                                            }`}
+                                        >
+                                            {o.label}
+                                        </button>
+                                    ))}
                                 </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex gap-3 pt-6 border-t border-border">
-                                <button 
-                                    onClick={handleReset} 
-                                    className="flex-1 py-2 px-4 rounded-lg font-semibold text-sm bg-header text-foreground border border-border hover:bg-border/30 transition-all"
-                                >
-                                    Reset
-                                </button>
-                                <button 
-                                    onClick={handleApply} 
-                                    className="flex-1 py-2 px-4 rounded-lg font-semibold text-sm bg-accent text-white hover:bg-accent-hover transition-all shadow-sm"
-                                >
-                                    Apply
-                                </button>
-                            </div>
+                            </fieldset>
                         </div>
-                    </div>
+
+                        <div className="flex gap-3 p-6 border-t border-border">
+                            <button
+                                onClick={handleReset}
+                                className="flex-1 py-2.5 rounded-[var(--radius-control)] font-semibold border border-border text-foreground hover:bg-surface transition-colors"
+                            >
+                                Reset
+                            </button>
+                            <button
+                                onClick={handleApply}
+                                className="flex-1 py-2.5 rounded-[var(--radius-control)] font-semibold bg-accent text-on-accent hover:bg-accent-hover transition-colors"
+                            >
+                                Apply filters
+                            </button>
+                        </div>
+                    </aside>
                 </>
             )}
         </>

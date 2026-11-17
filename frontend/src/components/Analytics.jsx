@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Star, GitFork, Users, Code, TrendingUp, Share2, UserPlus, Award, Activity, GitCommit, Calendar, ExternalLink } from 'lucide-react';
+import { Star, GitFork, Share2 } from 'lucide-react';
+import { languageColor } from '../lib/languageColors';
+import { LoadingSpinner } from './LoadingSpinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { AnalyticsSidebar } from './AnalyticsSidebar';
 
 export function Analytics() {
+    usePageTitle('Analytics');
     const { user } = useAuth();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -86,209 +90,148 @@ export function Analytics() {
         }
     }, [user, fetchUserStats]);
 
-    const languageColors = {
-        JavaScript: '#f1e05a',
-        TypeScript: '#3178c6',
-        Python: '#3572A5',
-        Java: '#b07219',
-        Go: '#00ADD8',
-        Rust: '#dea584',
-        Ruby: '#701516',
-        PHP: '#4F5D95',
-        C: '#555555',
-        'C++': '#f34b7d',
-    };
-
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-background">
-                <div className="text-center">
-                    <Activity className="w-12 h-12 animate-spin mx-auto mb-4 text-accent" />
-                    <p className="text-muted">Analyzing your open source journey...</p>
-                </div>
-            </div>
-        );
+        return <LoadingSpinner message="Reading your GitHub activity..." />;
     }
 
+    const totals = [
+        { label: 'Repositories', value: stats?.totalRepos || 0 },
+        { label: 'Stars earned', value: stats?.totalStars || 0, signal: true },
+        { label: 'Forks', value: stats?.totalForks || 0 },
+        { label: 'Recent commits', value: stats?.totalCommits || 0 },
+    ];
+
+    const panel = 'p-6 rounded-[var(--radius-panel)] border border-border bg-surface';
+
     return (
-        <div className="space-y-6 max-w-6xl mx-auto px-4 py-8">
-            {/* Header with Profile */}
-            <div className="relative p-8 rounded-2xl border border-border bg-header shadow-sm overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl"></div>
-                
-                <div className="relative flex flex-col md:flex-row items-center gap-6">
-                    <img
-                        src={user.avatar_url}
-                        alt={user.login}
-                        className="w-24 h-24 rounded-full border-2 border-border shadow-sm"
-                    />
-                    
-                    <div className="flex-1 text-center md:text-left">
-                        <h1 className="text-3xl font-bold text-foreground mb-1">
-                            {user.name || user.login}
-                        </h1>
-                        <p className="text-muted text-lg mb-4">
-                            @{user.login} • Developer Analytics
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <button
-                                onClick={() => setShowSidebar(true)}
-                                className="flex items-center gap-2 px-5 py-2 rounded-lg
-                                         bg-accent text-white font-semibold
-                                         hover:bg-accent-hover
-                                         transition-all shadow-sm"
-                            >
-                                <Share2 className="w-4 h-4" />
-                                Share & Invite
-                            </button>
-                        </div>
-                    </div>
+        <div className="space-y-8">
+            {/* Profile */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                <img
+                    src={user.avatar_url}
+                    alt=""
+                    className="w-20 h-20 rounded-full border border-border"
+                />
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-3xl font-extrabold tracking-[-0.03em] truncate">{user.name || user.login}</h1>
+                    <p className="mt-1 text-muted">@{user.login}</p>
                 </div>
+                <button
+                    onClick={() => setShowSidebar(true)}
+                    className="self-start sm:self-center flex items-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)] border border-border font-semibold text-foreground hover:bg-surface transition-colors"
+                >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                </button>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { icon: Code, label: 'Repos', value: stats?.totalRepos || 0, color: 'text-blue-500' },
-                    { icon: Star, label: 'Stars', value: stats?.totalStars || 0, color: 'text-yellow-500' },
-                    { icon: GitFork, label: 'Forks', value: stats?.totalForks || 0, color: 'text-green-500' },
-                    { icon: GitCommit, label: 'Commits', value: stats?.totalCommits || 0, color: 'text-muted' }
-                ].map((stat, i) => (
-                    <div key={i} className="group p-6 rounded-xl border border-border bg-header shadow-sm transition-all hover:border-muted">
-                        <stat.icon className={`w-8 h-8 mb-3 ${stat.color}`} />
-                        <p className="text-3xl font-bold text-foreground mb-1">
-                            {stat.value.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted font-medium">
-                            {stat.label}
-                        </p>
+            {/* Totals */}
+            <dl className="grid grid-cols-2 lg:grid-cols-4 rounded-[var(--radius-panel)] border border-border bg-surface overflow-hidden">
+                {totals.map((t, i) => (
+                    <div
+                        key={t.label}
+                        className={`p-5 sm:p-6 border-border ${i % 2 === 1 ? 'border-l' : ''} ${i >= 2 ? 'border-t lg:border-t-0' : ''} ${i === 2 ? 'lg:border-l' : ''}`}
+                    >
+                        <dt className="text-sm text-muted">{t.label}</dt>
+                        <dd className={`mt-1 text-3xl font-bold tabular-nums ${t.signal ? 'text-signal' : 'text-foreground'}`}>
+                            {t.signal && <Star className="inline w-6 h-6 -mt-1 mr-1 fill-current" aria-hidden="true" />}
+                            {t.value.toLocaleString()}
+                        </dd>
                     </div>
                 ))}
-            </div>
+            </dl>
 
-            {/* Content Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Language Breakdown */}
-                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
-                    <div className="flex items-center gap-2 mb-6">
-                        <TrendingUp className="w-5 h-5 text-muted" />
-                        <h2 className="text-xl font-bold text-foreground">
-                            Top Languages
-                        </h2>
-                    </div>
+                {/* Languages */}
+                <section className={panel}>
+                    <h2 className="text-lg font-bold">Top languages</h2>
+                    <p className="text-sm text-muted mt-1">Share of your repositories by primary language</p>
 
-                    <div className="space-y-4">
-                        {stats?.topLanguages?.map(([lang, count]) => {
-                            const percentage = (count / stats.totalRepos) * 100;
-                            return (
-                                <div key={lang}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <div 
-                                                className="w-3 h-3 rounded-full"
-                                                style={{ backgroundColor: languageColors[lang] || 'var(--muted)' }}
-                                            />
-                                            <span className="font-semibold text-foreground">
-                                                {lang}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-muted">
-                                            {count} repos ({percentage.toFixed(1)}%)
+                    {stats?.topLanguages?.length ? (
+                        <>
+                            <div className="mt-6 flex h-3 rounded-full overflow-hidden bg-border" aria-hidden="true">
+                                {stats.topLanguages.map(([lang, count]) => (
+                                    <span
+                                        key={lang}
+                                        style={{ width: `${(count / stats.totalRepos) * 100}%`, backgroundColor: languageColor(lang) }}
+                                    />
+                                ))}
+                            </div>
+                            <ul className="mt-5 space-y-3">
+                                {stats.topLanguages.map(([lang, count]) => (
+                                    <li key={lang} className="flex items-center justify-between gap-4 text-sm">
+                                        <span className="flex items-center gap-2 font-medium">
+                                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: languageColor(lang) }} />
+                                            {lang}
                                         </span>
-                                    </div>
-                                    <div className="w-full h-2 bg-border rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full rounded-full transition-all duration-1000"
-                                            style={{ 
-                                                width: `${percentage}%`,
-                                                backgroundColor: languageColors[lang] || 'var(--muted)'
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+                                        <span className="text-muted tabular-nums">
+                                            {count} {count === 1 ? 'repo' : 'repos'}, {((count / stats.totalRepos) * 100).toFixed(0)}%
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    ) : (
+                        <p className="mt-6 text-sm text-muted">No language data yet. Push some code and check back.</p>
+                    )}
+                </section>
 
-                {/* Top Repositories */}
-                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
-                    <div className="flex items-center gap-2 mb-6">
-                        <Award className="w-5 h-5 text-muted" />
-                        <h2 className="text-xl font-bold text-foreground">
-                            Notable Projects
-                        </h2>
-                    </div>
-
-                    <div className="space-y-3">
+                {/* Top repositories */}
+                <section className={panel}>
+                    <h2 className="text-lg font-bold">Most-starred projects</h2>
+                    <ol className="mt-4 divide-y divide-border">
                         {stats?.topRepos?.map((repo) => (
-                            <a
-                                key={repo.id}
-                                href={repo.html_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-muted bg-background transition-all group"
-                            >
-                                <div className="min-w-0 pr-4">
-                                    <h3 className="font-bold text-foreground text-sm group-hover:text-accent truncate">
-                                        {repo.name}
-                                    </h3>
-                                    <div className="flex items-center gap-3 mt-1 text-xs text-muted">
-                                        <div className="flex items-center gap-1">
-                                            <Star className="w-3 h-3 fill-current" />
-                                            {repo.stargazers_count}
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <GitFork className="w-3 h-3" />
-                                            {repo.forks_count}
-                                        </div>
-                                    </div>
-                                </div>
-                                <ExternalLink className="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
+                            <li key={repo.id}>
+                                <a
+                                    href={repo.html_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-between gap-4 py-3 group"
+                                >
+                                    <span className="font-medium text-foreground group-hover:text-accent truncate">{repo.name}</span>
+                                    <span className="flex items-center gap-4 text-sm shrink-0 tabular-nums">
+                                        <span className="flex items-center gap-1 text-signal font-semibold">
+                                            <Star className="w-4 h-4 fill-current" aria-hidden="true" />
+                                            {repo.stargazers_count.toLocaleString()}
+                                        </span>
+                                        <span className="flex items-center gap-1 text-muted">
+                                            <GitFork className="w-4 h-4" aria-hidden="true" />
+                                            {repo.forks_count.toLocaleString()}
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
                         ))}
-                    </div>
-                </div>
+                    </ol>
+                </section>
             </div>
 
-            {/* Secondary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Calendar className="w-5 h-5 text-muted" />
-                        <h2 className="text-lg font-bold text-foreground">
-                            Activity Overview
-                        </h2>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-bold text-foreground">{stats?.recentActivity || 0}</span>
-                        <span className="text-muted text-sm font-medium">Active days (Last 30D)</span>
-                    </div>
-                </div>
+                <section className={panel}>
+                    <h2 className="text-lg font-bold">Activity</h2>
+                    <p className="mt-4 flex items-baseline gap-2">
+                        <span className="text-4xl font-bold tabular-nums">{stats?.recentActivity || 0}</span>
+                        <span className="text-muted">active days in the last 30</span>
+                    </p>
+                </section>
 
-                <div className="p-6 rounded-2xl border border-border bg-header shadow-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Activity className="w-5 h-5 text-muted" />
-                        <h2 className="text-lg font-bold text-foreground">
-                            Repository Types
-                        </h2>
+                <section className={panel}>
+                    <h2 className="text-lg font-bold">Visibility</h2>
+                    <div className="mt-4 flex gap-10">
+                        <p>
+                            <span className="block text-4xl font-bold tabular-nums">{stats?.publicRepos || 0}</span>
+                            <span className="text-sm text-muted">public</span>
+                        </p>
+                        <p>
+                            <span className="block text-4xl font-bold tabular-nums">{stats?.privateRepos || 0}</span>
+                            <span className="text-sm text-muted">private</span>
+                        </p>
                     </div>
-                    <div className="flex gap-8">
-                        <div>
-                            <p className="text-xs text-muted font-medium uppercase tracking-wider mb-1">Public</p>
-                            <p className="text-2xl font-bold text-foreground">{stats?.publicRepos || 0}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs text-muted font-medium uppercase tracking-wider mb-1">Private</p>
-                            <p className="text-2xl font-bold text-foreground">{stats?.privateRepos || 0}</p>
-                        </div>
-                    </div>
-                </div>
+                </section>
             </div>
 
-            <AnalyticsSidebar 
-                isOpen={showSidebar} 
+            <AnalyticsSidebar
+                isOpen={showSidebar}
                 onClose={() => setShowSidebar(false)}
                 user={user}
             />

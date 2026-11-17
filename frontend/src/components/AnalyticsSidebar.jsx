@@ -12,7 +12,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
 
     const shareUrl = `${window.location.origin}/analytics/${user.login}`;
     const shareTitle = `${user.name || user.login}'s GitHub Analytics`;
-    const shareText = `Check out ${user.name || user.login}'s GitHub Analytics Dashboard! 🚀`;
+    const shareText = `Here’s a snapshot of ${user.name || user.login}’s GitHub activity on Lens+Github.`;
 
     const copyToClipboard = async () => {
         try {
@@ -83,37 +83,37 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50"
+                className="fixed inset-0 bg-black/40 z-[60]"
                 onClick={onClose}
             />
 
             {/* Sidebar */}
             <div className="fixed right-0 top-0 h-full w-full sm:w-96 
                           bg-background border-l border-border 
-                          z-50 shadow-2xl overflow-y-auto
-                          animate-in slide-in-from-right duration-300">
+                          z-[61] shadow-[var(--shadow-float)] overflow-y-auto">
                 
                 {/* Header */}
                 <div className="sticky top-0 bg-background border-b border-border p-6 z-10">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-foreground">
-                            Share & Invite
+                            Share your analytics
                         </h2>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-header transition-colors"
+                            aria-label="Close"
+                            className="p-2 rounded-[var(--radius-control)] hover:bg-header transition-colors"
                         >
                             <X className="w-5 h-5 text-muted" />
                         </button>
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex gap-2 p-1 bg-header rounded-xl border border-border">
+                    <div className="flex gap-2 p-1 bg-header rounded-[var(--radius-row)] border border-border">
                         <button
                             onClick={() => setActiveTab('share')}
-                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            className={`flex-1 px-4 py-2 rounded-[var(--radius-control)] text-sm font-semibold transition-all ${
                                 activeTab === 'share'
-                                    ? 'bg-accent text-white shadow-sm'
+                                    ? 'bg-accent text-on-accent shadow-sm'
                                     : 'text-muted hover:text-foreground'
                             }`}
                         >
@@ -122,9 +122,9 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                         </button>
                         <button
                             onClick={() => setActiveTab('invite')}
-                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            className={`flex-1 px-4 py-2 rounded-[var(--radius-control)] text-sm font-semibold transition-all ${
                                 activeTab === 'invite'
-                                    ? 'bg-accent text-white shadow-sm'
+                                    ? 'bg-accent text-on-accent shadow-sm'
                                     : 'text-muted hover:text-foreground'
                             }`}
                         >
@@ -139,7 +139,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                     {activeTab === 'share' ? (
                         <>
                             {/* Profile Preview */}
-                            <div className="p-4 rounded-xl border border-border bg-header shadow-sm">
+                            <div className="p-4 rounded-[var(--radius-row)] border border-border bg-header shadow-sm">
                                 <div className="flex items-center gap-3">
                                     <img
                                         src={user.avatar_url}
@@ -167,16 +167,16 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         type="text"
                                         readOnly
                                         value={shareUrl}
-                                        className="flex-1 px-4 py-2 rounded-lg bg-header 
+                                        className="flex-1 px-4 py-2 rounded-[var(--radius-control)] bg-header 
                                                  text-foreground font-mono text-sm
                                                  border border-border focus:outline-none"
                                     />
                                     <button
                                         onClick={copyToClipboard}
-                                        className={`px-4 py-2 rounded-lg font-semibold transition-all shadow-sm ${
+                                        className={`px-4 py-2 rounded-[var(--radius-control)] font-semibold transition-all shadow-sm ${
                                             copied
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-accent text-white hover:bg-accent-hover'
+                                                ? 'bg-foreground text-background'
+                                                : 'bg-accent text-on-accent hover:bg-accent-hover'
                                         }`}
                                     >
                                         {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -192,36 +192,36 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                 <div className="grid grid-cols-2 gap-3">
                                     <button
                                         onClick={shareViaEmail}
-                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-border/30 transition-all font-medium text-sm"
+                                                 hover:bg-surface transition-all font-medium text-sm"
                                     >
                                         <Mail className="w-4 h-4 text-muted" />
                                         Email
                                     </button>
                                     <button
                                         onClick={shareViaTwitter}
-                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-border/30 transition-all font-medium text-sm"
+                                                 hover:bg-surface transition-all font-medium text-sm"
                                     >
                                         <MessageCircle className="w-4 h-4 text-muted" />
                                         Twitter
                                     </button>
                                     <button
                                         onClick={shareViaLinkedIn}
-                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-border/30 transition-all font-medium text-sm"
+                                                 hover:bg-surface transition-all font-medium text-sm"
                                     >
                                         <Linkedin className="w-4 h-4 text-muted" />
                                         LinkedIn
                                     </button>
                                     <button
                                         onClick={shareViaFacebook}
-                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-control)]
                                                  bg-header text-foreground border border-border
-                                                 hover:bg-border/30 transition-all font-medium text-sm"
+                                                 hover:bg-surface transition-all font-medium text-sm"
                                     >
                                         <Facebook className="w-4 h-4 text-muted" />
                                         Facebook
@@ -233,13 +233,13 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             {navigator.share && (
                                 <button
                                     onClick={shareViaWebAPI}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl
-                                             bg-accent text-white font-semibold
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-[var(--radius-row)]
+                                             bg-accent text-on-accent font-semibold
                                              hover:bg-accent-hover
                                              transition-all shadow-sm"
                                 >
                                     <Share2 className="w-4 h-4" />
-                                    Share via...
+                                    More sharing options
                                 </button>
                             )}
                         </>
@@ -249,10 +249,10 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-foreground mb-1">
-                                        Invite Friends
+                                        Invite by email
                                     </label>
                                     <p className="text-sm text-muted mb-4">
-                                        Invite colleagues to check out Lens+Github!
+                                        Send a colleague a link to Lens+Github.
                                     </p>
                                     <form onSubmit={sendInvite} className="space-y-3">
                                         <input
@@ -260,19 +260,19 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="friend@example.com"
-                                            className="w-full px-4 py-2 rounded-lg bg-header 
+                                            className="w-full px-4 py-2 rounded-[var(--radius-control)] bg-header 
                                                      text-foreground border border-border
                                                      focus:outline-none focus:border-accent
                                                      transition-all"
                                         />
                                         <button
                                             type="submit"
-                                            className="w-full px-4 py-2.5 rounded-lg font-semibold
-                                                     bg-accent text-white
+                                            className="w-full px-4 py-2.5 rounded-[var(--radius-control)] font-semibold
+                                                     bg-accent text-on-accent
                                                      hover:bg-accent-hover
                                                      transition-all shadow-sm"
                                         >
-                                            Send Invitation
+                                            Open email to invite
                                         </button>
                                     </form>
                                 </div>
@@ -290,7 +290,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                 setInvites([]);
                                                 localStorage.removeItem('invites');
                                             }}
-                                            className="text-xs text-red-500 hover:text-red-600 font-medium transition-colors"
+                                            className="text-xs text-danger hover:underline font-medium transition-colors"
                                         >
                                             Clear All
                                         </button>
@@ -299,7 +299,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                         {invites.slice().reverse().map((invite, i) => (
                                             <div
                                                 key={i}
-                                                className="p-3 rounded-lg bg-header border border-border
+                                                className="p-3 rounded-[var(--radius-control)] bg-header border border-border
                                                          flex items-center justify-between group"
                                             >
                                                 <div className="flex-1 min-w-0">
@@ -310,7 +310,7 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                                                         {new Date(invite.date).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
+                                                <span className="text-xs text-muted">Opened in email</span>
                                             </div>
                                         ))}
                                     </div>
@@ -318,9 +318,9 @@ export function AnalyticsSidebar({ isOpen, onClose, user }) {
                             )}
 
                             {/* Info */}
-                            <div className="p-4 rounded-xl bg-accent/5 border border-accent/20">
+                            <div className="p-4 rounded-[var(--radius-row)] bg-accent/5 border border-accent/20">
                                 <p className="text-xs text-muted leading-relaxed">
-                                    💡 <strong>Tip:</strong> Invite your team members to track everyone's open source progress together!
+                                    Invites open your email app with a link to this page. Nothing is sent from Lens+Github itself.
                                 </p>
                             </div>
                         </>

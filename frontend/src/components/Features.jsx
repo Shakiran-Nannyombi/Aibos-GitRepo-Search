@@ -1,55 +1,83 @@
-import React from 'react';
+import { Check, Star, SlidersHorizontal } from 'lucide-react';
+
+function Chip({ children, active = false }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[var(--radius-control)] border text-sm ${
+        active ? 'border-accent text-accent bg-accent/10' : 'border-border text-foreground bg-surface'
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
+
+const steps = [
+  {
+    title: 'Search the way you think',
+    body: 'Type plain keywords or GitHub qualifiers. Results come straight from the GitHub search API, sorted by stars by default.',
+    demo: (
+      <div className="font-mono text-sm space-y-2">
+        <div className="px-3 py-2 rounded-[var(--radius-control)] border border-border bg-surface">react table</div>
+        <div className="px-3 py-2 rounded-[var(--radius-control)] border border-border bg-surface">
+          state machine <span className="text-accent">language:typescript</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: 'Narrow it down',
+    body: 'Filter by language and minimum stars, then sort by stars, forks or recent activity to skip abandoned projects.',
+    demo: (
+      <div className="flex flex-wrap gap-2">
+        <Chip><SlidersHorizontal className="w-3.5 h-3.5" /> Filters</Chip>
+        <Chip active>TypeScript</Chip>
+        <Chip active><Star className="w-3.5 h-3.5" /> 1,000+</Chip>
+        <Chip>Recently updated</Chip>
+      </div>
+    ),
+  },
+  {
+    title: 'Keep what matters',
+    body: 'Save repositories to your own list, filter it by language, and see a breakdown of your GitHub activity on the analytics page.',
+    demo: (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-3 py-2 rounded-[var(--radius-control)] border border-border bg-surface text-sm">
+          <span className="font-medium">pmndrs/zustand</span>
+          <span className="inline-flex items-center gap-1 text-accent font-medium">
+            <Check className="w-4 h-4" /> Saved
+          </span>
+        </div>
+        <div className="flex h-2 rounded-full overflow-hidden" aria-hidden="true">
+          <span className="w-[46%]" style={{ background: '#3178c6' }} />
+          <span className="w-[28%]" style={{ background: '#3572A5' }} />
+          <span className="w-[16%]" style={{ background: '#dea584' }} />
+          <span className="flex-1 bg-border" />
+        </div>
+      </div>
+    ),
+  },
+];
 
 export function Features() {
   return (
-    <div className="py-24 bg-background relative z-10">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Everything you need to explore</h2>
-          <p className="text-xl text-muted max-w-2xl mx-auto">
-            Powerful tools to help you find, analyze, and save the best open source projects.
-          </p>
-        </div>
+    <section id="how-it-works" className="scroll-mt-24 border-t border-border bg-surface/50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <h2 className="text-3xl md:text-[2.4rem] font-bold max-w-[22ch]">
+          From a vague idea to a shortlist in three steps
+        </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Feature 1 */}
-          <div className="p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 transition-all duration-300 hover:shadow-lg group">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-foreground">Smart Search</h3>
-            <p className="text-muted text-sm leading-relaxed">Instantly search millions of repositories with advanced filters for language, stars, and topics.</p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 transition-all duration-300 hover:shadow-lg group">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
-              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-foreground">Usage Analytics</h3>
-            <p className="text-muted text-sm leading-relaxed">Visualize language distribution and growth trends for any repository at a glance.</p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 transition-all duration-300 hover:shadow-lg group">
-             <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center mb-4 group-hover:bg-pink-500/20 transition-colors">
-              <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-foreground">Save Favorites</h3>
-            <p className="text-muted text-sm leading-relaxed">Create your personal collection of must-have libraries and tools for your next project.</p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 transition-all duration-300 hover:shadow-lg group">
-             <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
-              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-foreground">Open Source</h3>
-            <p className="text-muted text-sm leading-relaxed">Built by developers for developers. Completely free and open source forever.</p>
-          </div>
-
-        </div>
+        <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-10">
+          {steps.map((step, i) => (
+            <li key={step.title} className="flex flex-col">
+              <span className="text-sm font-semibold text-accent tabular-nums">Step {i + 1}</span>
+              <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
+              <p className="mt-2 text-muted leading-relaxed">{step.body}</p>
+              <div className="mt-6 pt-6 border-t border-dashed border-border">{step.demo}</div>
+            </li>
+          ))}
+        </ol>
       </div>
-    </div>
+    </section>
   );
 }

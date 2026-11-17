@@ -1,28 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // User type can be inferred
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check for stored auth token
+  // Read the stored session synchronously so protected routes don't redirect
+  // on the first render after a page refresh.
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem('github_token');
     const storedUser = localStorage.getItem('github_user');
-
-    if (token && storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-      } catch {
-        localStorage.removeItem('github_user');
-        localStorage.removeItem('github_token');
-      }
+    if (!token || !storedUser) return null;
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      localStorage.removeItem('github_user');
+      localStorage.removeItem('github_token');
+      return null;
     }
-  }, []);
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!user);
 
   // Update isAuthenticated when user changes
   useEffect(() => {

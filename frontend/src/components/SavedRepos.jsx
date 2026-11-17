@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Bookmark, Trash2, Filter as FilterIcon } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { EmptyState } from './EmptyState';
 import { SavedRepoCard } from './SavedRepoCard';
 import { ConfirmModal } from './ConfirmModal';
 
 export function SavedRepos() {
+    usePageTitle('Saved');
     const [savedRepos, setSavedRepos] = useState([]);
     const [filteredRepos, setFilteredRepos] = useState([]);
     const [selectedLanguage, setSelectedLanguage] = useState('all');
@@ -78,109 +81,92 @@ export function SavedRepos() {
         setSavedRepos([]);
     };
 
+    const selectClass =
+        'px-3 py-2 rounded-[var(--radius-control)] bg-surface border border-border text-foreground text-sm font-medium cursor-pointer focus:outline-none focus:border-accent';
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <Bookmark className="w-6 h-6 text-foreground" />
-                    <h2 className="text-2xl font-bold text-foreground">
-                        Saved Repositories
-                    </h2>
-                    <span className="px-3 py-1 rounded-full bg-header border border-border text-foreground text-sm font-semibold">
-                        {filteredRepos.length}
-                    </span>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-extrabold tracking-[-0.03em]">Saved repositories</h1>
+                    <p className="mt-1 text-muted">
+                        {savedRepos.length === 0
+                            ? 'Nothing saved yet.'
+                            : `${savedRepos.length} saved${filteredRepos.length !== savedRepos.length ? `, ${filteredRepos.length} shown` : ''}`}
+                    </p>
                 </div>
-                
+
                 {savedRepos.length > 0 && (
                     <button
                         onClick={clearAll}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg
-                                 bg-red-600 text-white font-semibold
-                                 hover:bg-red-700 transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 py-2 rounded-[var(--radius-control)] text-sm font-semibold text-danger border border-border hover:border-danger/50 hover:bg-danger/10 transition-colors"
                     >
                         <Trash2 className="w-4 h-4" />
-                        Clear All
+                        Remove all
                     </button>
                 )}
             </div>
 
-            {/* Filters */}
             {savedRepos.length > 0 && (
-                <div className="flex flex-wrap items-center gap-3 p-4 rounded-xl 
-                              bg-header border border-border shadow-sm">
-                    <FilterIcon className="w-5 h-5 text-muted" />
-                    
-                    {/* Language Filter */}
-                    <select
-                        value={selectedLanguage}
-                        onChange={(e) => setSelectedLanguage(e.target.value)}
-                        className="px-4 py-2 rounded-lg bg-background 
-                                 border border-border
-                                 text-foreground font-medium text-sm
-                                 focus:outline-none focus:border-muted
-                                 transition-all cursor-pointer"
-                    >
-                        <option value="all">All Languages ({savedRepos.length})</option>
-                        {languages.map(lang => {
-                            const count = savedRepos.filter(r => r.language === lang).length;
-                            return <option key={lang} value={lang}>{lang} ({count})</option>;
-                        })}
-                    </select>
+                <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-border">
+                    <label className="flex items-center gap-2 text-sm text-muted">
+                        Language
+                        <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)} className={selectClass}>
+                            <option value="all">All ({savedRepos.length})</option>
+                            {languages.map(lang => {
+                                const count = savedRepos.filter(r => r.language === lang).length;
+                                return <option key={lang} value={lang}>{lang} ({count})</option>;
+                            })}
+                        </select>
+                    </label>
 
-                    {/* Sort */}
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        className="px-4 py-2 rounded-lg bg-background 
-                                 border border-border
-                                 text-foreground font-medium text-sm
-                                 focus:outline-none focus:border-muted
-                                 transition-all cursor-pointer"
-                    >
-                        <option value="recent">Recently Updated</option>
-                        <option value="stars-desc">Stars (High to Low)</option>
-                        <option value="stars-asc">Stars (Low to High)</option>
-                        <option value="forks-desc">Forks (High to Low)</option>
-                        <option value="forks-asc">Forks (Low to High)</option>
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                    </select>
+                    <label className="flex items-center gap-2 text-sm text-muted">
+                        Sort by
+                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectClass}>
+                            <option value="recent">Recently updated</option>
+                            <option value="stars-desc">Most stars</option>
+                            <option value="stars-asc">Fewest stars</option>
+                            <option value="forks-desc">Most forks</option>
+                            <option value="forks-asc">Fewest forks</option>
+                            <option value="name-asc">Name, A to Z</option>
+                            <option value="name-desc">Name, Z to A</option>
+                        </select>
+                    </label>
                 </div>
             )}
 
-            {/* Repos Grid */}
             {savedRepos.length === 0 ? (
-                <div className="py-12">
-                    <EmptyState 
-                        type="no-results" 
-                        message="You haven't saved any repositories yet. Click the + button on any repository card to save it here!"
-                    />
+                <div className="py-10 max-w-xl">
+                    <p className="text-muted leading-relaxed">
+                        Use the bookmark button on any search result to keep it here.
+                    </p>
+                    <Link
+                        to="/dashboard"
+                        className="mt-6 inline-flex px-4 py-2.5 rounded-[var(--radius-control)] bg-accent text-on-accent font-semibold hover:bg-accent-hover transition-colors"
+                    >
+                        Search repositories
+                    </Link>
                 </div>
             ) : filteredRepos.length === 0 ? (
-                <div className="py-12">
-                    <EmptyState 
-                        type="no-results" 
-                        message="No repositories match the selected filters."
-                    />
-                </div>
+                <EmptyState type="no-results" message="None of your saved repositories match this language." />
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {filteredRepos.map((repo) => (
-                        <SavedRepoCard key={repo.id} repo={repo} onRemove={loadSavedRepos} />
+                        <li key={repo.id}>
+                            <SavedRepoCard repo={repo} onRemove={loadSavedRepos} />
+                        </li>
                     ))}
-                </div>
+                </ul>
             )}
 
-            {/* Confirm Modal */}
             <ConfirmModal
                 isOpen={showConfirmModal}
                 onClose={() => setShowConfirmModal(false)}
                 onConfirm={handleConfirmClear}
-                title="Clear All Repositories?"
-                message={`Are you sure you want to remove all ${savedRepos.length} saved ${savedRepos.length === 1 ? 'repository' : 'repositories'}? This action cannot be undone.`}
-                confirmText="Clear All"
-                cancelText="Cancel"
+                title={`Remove all ${savedRepos.length} saved ${savedRepos.length === 1 ? 'repository' : 'repositories'}?`}
+                message="They'll be cleared from this browser. This can't be undone."
+                confirmText="Remove all"
+                cancelText="Keep them"
             />
         </div>
     );

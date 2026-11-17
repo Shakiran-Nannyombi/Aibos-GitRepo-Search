@@ -1,8 +1,13 @@
 import { Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export function SearchBar({ onSearch, isLoading }) {
-    const [query, setQuery] = useState('');
+export function SearchBar({ onSearch, isLoading, value }) {
+    const [query, setQuery] = useState(value ?? '');
+
+    // Lets the parent fill the field, e.g. from an example query.
+    useEffect(() => {
+        if (value !== undefined) setQuery(value);
+    }, [value]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -11,39 +16,36 @@ export function SearchBar({ onSearch, isLoading }) {
         }
     };
 
-    const handleClear = () => {
-        setQuery('');
-    };
-
     return (
-        <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-            <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors text-muted group-focus-within:text-accent" />
-                
+        <form onSubmit={handleSubmit} role="search" className="w-full">
+            <div className="relative flex items-center h-14 rounded-[var(--radius-row)] border-2 border-border bg-surface focus-within:border-accent transition-colors">
+                <Search className="absolute left-4 w-5 h-5 text-muted pointer-events-none" aria-hidden="true" />
+
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search repositories..."
+                    aria-label="Search repositories"
                     disabled={isLoading}
-                    className="w-full pl-12 pr-32 py-4 text-lg rounded-full focus:outline-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm border border-border bg-header text-foreground focus:border-accent hover:border-muted"
+                    className="w-full h-full pl-12 pr-36 bg-transparent font-mono text-[15px] text-foreground placeholder:text-muted placeholder:font-sans focus:outline-none disabled:opacity-60"
                 />
 
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div className="absolute right-2 flex items-center gap-1">
                     {query && (
                         <button
                             type="button"
-                            onClick={handleClear}
-                            className="p-2 rounded-full transition-colors hover:bg-border/30"
+                            onClick={() => setQuery('')}
+                            aria-label="Clear search"
+                            className="p-2 rounded-[var(--radius-control)] text-muted hover:text-foreground hover:bg-background transition-colors"
                         >
-                            <X className="w-4 h-4 text-muted" />
+                            <X className="w-4 h-4" />
                         </button>
                     )}
-                    
                     <button
                         type="submit"
                         disabled={!query.trim() || isLoading}
-                        className="px-6 py-2 rounded-full font-semibold transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-accent text-white hover:bg-accent-hover"
+                        className="px-4 py-2 rounded-[var(--radius-control)] font-semibold bg-accent text-on-accent hover:bg-accent-hover disabled:opacity-50 transition-colors"
                     >
                         {isLoading ? 'Searching...' : 'Search'}
                     </button>

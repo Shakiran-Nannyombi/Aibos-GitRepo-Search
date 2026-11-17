@@ -1,45 +1,37 @@
-import { AlertTriangle } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText = 'Confirm', cancelText = 'Cancel' }) {
+    const cancelRef = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        cancelRef.current?.focus();
+        const onKey = (e) => e.key === 'Escape' && onClose();
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
-            {/* Backdrop */}
-            <div 
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                onClick={onClose}
-            />
-            
-            {/* Modal */}
-            <div className="relative bg-background border border-border 
-                          rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 
-                          animate-in fade-in zoom-in duration-200">
-                {/* Icon */}
-                <div className="flex justify-center mb-6">
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 
-                                  flex items-center justify-center">
-                        <AlertTriangle className="w-8 h-8 text-red-500" strokeWidth={2} />
-                    </div>
-                </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-center mb-2 text-foreground">
-                    {title}
-                </h3>
+            <div
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="confirm-title"
+                aria-describedby="confirm-message"
+                className="relative w-full max-w-md p-6 rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)]"
+            >
+                <h2 id="confirm-title" className="text-xl font-bold">{title}</h2>
+                <p id="confirm-message" className="mt-2 text-muted leading-relaxed">{message}</p>
 
-                {/* Message */}
-                <p className="text-center text-muted mb-8 leading-relaxed text-sm">
-                    {message}
-                </p>
-
-                {/* Actions */}
-                <div className="flex gap-3">
+                <div className="mt-8 flex justify-end gap-3">
                     <button
+                        ref={cancelRef}
                         onClick={onClose}
-                        className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm
-                                 bg-header text-foreground border border-border
-                                 hover:bg-border/30 transition-all duration-200"
+                        className="px-4 py-2.5 rounded-[var(--radius-control)] font-semibold border border-border text-foreground hover:bg-background transition-colors"
                     >
                         {cancelText}
                     </button>
@@ -48,9 +40,7 @@ export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confi
                             onConfirm();
                             onClose();
                         }}
-                        className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm
-                                 bg-red-500 text-white hover:bg-red-600
-                                 transition-all duration-200 shadow-sm"
+                        className="px-4 py-2.5 rounded-[var(--radius-control)] font-semibold bg-danger text-on-accent hover:opacity-90 transition-opacity"
                     >
                         {confirmText}
                     </button>

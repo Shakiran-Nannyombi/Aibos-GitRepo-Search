@@ -1,4 +1,3 @@
-import './App.css'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Navbar } from './components/navbar'
 import { Hero } from './components/Hero'
@@ -15,22 +14,38 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 
-// Protected route wrapper for home page
+// Shared frame for every page: fixed navbar, centered content column, footer.
+function PageShell({ children, bare = false }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <Navbar />
+      {bare ? (
+        children
+      ) : (
+        <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 flex-grow">
+          {children}
+        </main>
+      )}
+      <Footer />
+    </div>
+  );
+}
+
+// Signed-in visitors skip the landing page.
 function HomePage() {
   const { user, isAuthenticated } = useAuth();
-  
-  // If user is logged in, redirect to dashboard
+
   if (user || isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
-  
+
   return (
-    <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
-      <Navbar />
-      <Hero />
-      <Features />
-      <Footer />
-    </div>
+    <PageShell bare>
+      <main className="flex-grow">
+        <Hero />
+        <Features />
+      </main>
+    </PageShell>
   );
 }
 
@@ -40,78 +55,32 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            {/* Home page - redirects to dashboard if logged in */}
             <Route path="/" element={<HomePage />} />
-            
-            {/* Dashboard - protected */}
+
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
-                  <Dashboard />
-                  <Footer />
-                </div>
+                <PageShell><Dashboard /></PageShell>
               </ProtectedRoute>
             } />
-            
-            {/* Saved Repos - protected */}
+
             <Route path="/saved" element={
               <ProtectedRoute>
-                <div className="min-h-screen transition-colors duration-300 relative overflow-hidden bg-background text-foreground">
-                  <div className="relative z-10 flex flex-col min-h-screen">
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
-                      <SavedRepos />
-                    </main>
-                    <Footer />
-                  </div>
-                </div>
+                <PageShell><SavedRepos /></PageShell>
               </ProtectedRoute>
             } />
-            
-            {/* Analytics - protected */}
+
             <Route path="/analytics" element={
               <ProtectedRoute>
-                <div className="min-h-screen transition-colors duration-300 relative overflow-hidden bg-background text-foreground">
-                  <div className="relative z-10 flex flex-col min-h-screen">
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-32 flex-grow">
-                      <Analytics />
-                    </main>
-                    <Footer />
-                  </div>
-                </div>
+                <PageShell><Analytics /></PageShell>
               </ProtectedRoute>
             } />
-            
-            {/* Auth callback */}
+
             <Route path="/auth/callback" element={<AuthCallback />} />
 
-            {/* Local Auth */}
-            <Route path="/login" element={
-              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
-                <Navbar />
-                <Login />
-                <Footer />
-              </div>
-            } />
-            <Route path="/register" element={
-              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
-                <Navbar />
-                <Signup />
-                <Footer />
-              </div>
-            } />
-            
-            {/* About Page */}
-            <Route path="/about" element={
-              <div className="min-h-screen transition-colors duration-300 flex flex-col bg-background text-foreground">
-                <Navbar />
-                <About />
-                <Footer />
-              </div>
-            } />
-            
-            {/* Catch all - redirect to home */}
+            <Route path="/login" element={<PageShell><Login /></PageShell>} />
+            <Route path="/register" element={<PageShell><Signup /></PageShell>} />
+            <Route path="/about" element={<PageShell><About /></PageShell>} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>

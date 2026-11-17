@@ -1,92 +1,62 @@
-import { Mail, Github, Heart, Globe, Code2, Twitter } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+import { Link } from 'react-router-dom';
+import { Github, Mail } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+
+const AUTHOR_URL = 'https://github.com/Shakiran-Nannyombi';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const { user } = useAuth();
+  const links = user
+    ? [
+        { to: '/dashboard', label: 'Search' },
+        { to: '/saved', label: 'Saved' },
+        { to: '/analytics', label: 'Analytics' },
+        { to: '/about', label: 'About' },
+      ]
+    : [
+        { to: '/', label: 'Home' },
+        { to: '/about', label: 'About' },
+        { to: '/login', label: 'Sign in' },
+      ];
 
   return (
-    <footer className="relative bg-header border-t border-border mt-auto overflow-hidden">
-      {/* Creative Background Element */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-50"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Brand & Theme */}
-          <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center space-x-2">
-              <Code2 className="w-6 h-6 text-accent" />
-              <span className="font-bold text-xl text-foreground tracking-tight">
-                Lens+Github
-              </span>
-            </div>
-            <p className="text-sm text-muted">
-              Exploring the open source universe, one repository at a time.
-            </p>
-            <div className="pt-2">
-               <ThemeToggle />
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Discover</h3>
-            <ul className="space-y-2 text-sm text-muted">
-              <li><a href="/dashboard" className="hover:text-accent transition-colors">Search Repos</a></li>
-              <li><a href="/saved" className="hover:text-accent transition-colors">Saved Collections</a></li>
-              <li><a href="/analytics" className="hover:text-accent transition-colors">Analytics</a></li>
-            </ul>
-          </div>
-
-          {/* Comunity */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Community</h3>
-             <ul className="space-y-2 text-sm text-muted">
-              <li><a href="#" className="hover:text-accent transition-colors">Contributors</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Changelog</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Feedback</a></li>
-            </ul>
-          </div>
-
-          {/* Connect */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Connect</h3>
-            <div className="flex flex-col space-y-3">
-              <a
-                href="mailto:devkiran256@gmail.com"
-                className="flex items-center space-x-2 text-muted hover:text-accent transition-colors group"
-              >
-                <div className="p-2 rounded-full bg-background border border-border group-hover:border-accent transition-colors">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <span className="text-sm">Email Us</span>
-              </a>
-              
-              <a
-                href="https://github.com/Shakiran-Nannyombi"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-muted hover:text-accent transition-colors group"
-              >
-                <div className="p-2 rounded-full bg-background border border-border group-hover:border-accent transition-colors">
-                  <Github className="w-4 h-4" />
-                </div>
-                <span className="text-sm">GitHub</span>
-              </a>
-            </div>
-          </div>
+    <footer className="mt-auto border-t border-border">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+        <div className="md:mr-auto">
+          <p className="font-bold tracking-tight text-foreground">Lens+Github</p>
+          <p className="text-sm text-muted mt-1">
+            Built by{' '}
+            <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-accent underline underline-offset-4 decoration-border">
+              Shakiran Nannyombi
+            </a>
+          </p>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted">
-            &copy; {currentYear} Lens+Github Search. All rights reserved.
-          </p>
-          
-          <div className="flex items-center space-x-1 text-sm text-muted">
-             <span>Made with</span>
-             <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" />
-             <span>by dev-kiran</span>
-          </div>
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          {links.map((l) => (
+            <Link key={l.to} to={l.to} className="text-muted hover:text-foreground transition-colors">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <a
+            href={AUTHOR_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub profile"
+            className="p-2 rounded-[var(--radius-control)] border border-border text-muted hover:text-foreground hover:bg-surface transition-colors"
+          >
+            <Github className="w-[18px] h-[18px]" />
+          </a>
+          <a
+            href="mailto:devkiran256@gmail.com"
+            aria-label="Email"
+            className="p-2 rounded-[var(--radius-control)] border border-border text-muted hover:text-foreground hover:bg-surface transition-colors"
+          >
+            <Mail className="w-[18px] h-[18px]" />
+          </a>
         </div>
       </div>
     </footer>
